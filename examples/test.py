@@ -1,5 +1,5 @@
 import numpy as np
-from dlf.Tensor import Tensor
+from dlf.tensor import Tensor
 
 lst = [4, 4, 5, 2]
 
@@ -105,3 +105,7 @@ sum = z.SUM()
 # sum = add.SUM()
 # print(sum.data, sum.grad)
 sum.backward()
+
+print("--- Part 6 ---\n")
+
+from dlf.optimizer import SGD
