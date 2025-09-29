@@ -46,25 +46,14 @@ class Tensor():
         """
 
         operations = []
-        # check before doing backward, scalar variable
         self.grad = np.array(1)
-
-        # check type before using them in backward_operations
-        # has to be checked at creation actually
 
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
-            # print(element.__dict__['name'], Operations(ops).name, *parents)
-            # print(element, Operations(ops).name)
             operations.append((element, Operations(ops).name))
             backward_operation = backward_operations[ops]
             gradients = backward_operation(element.data, [*parents])
-            # print(f"gradients: {gradients}")
-            # print(f"type gradients: {type(gradients)}")
-            # print(f"\nnew parents")
             for parent, gradient in zip(parents, gradients):
-                # print(f"gradient: {gradient}")
-                # print(f"parent: {parent}")
                 if parent.grad is None:
                     grad = gradient
                 else:
@@ -82,7 +71,7 @@ class Tensor():
 
     def __repr__(self):
         if self.context is not None:
-            print(self.context)
+            # print(self.context)
             ops, *parents = self.context
             return f"<{self.data.shape}, {self.data}, {ops}>"
         else:
@@ -94,7 +83,6 @@ class Tensor():
     def ADD(self, x):
         result = Tensor(self.data + x.data)
         result.context = (Operations.ADD, self, x)
-        # result.context = (Operations.ADD, self, x)
         return result
 
     def __mul__(self, x):

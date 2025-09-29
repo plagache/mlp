@@ -108,4 +108,25 @@ sum.backward()
 
 print("--- Part 6 ---\n")
 
-from dlf.optimizer import SGD
+from dlf.optimizer import SGD, get_parameters
+
+class Network:
+    def __init__(self, y, b):
+        self.y = Tensor(y)
+        self.b = Tensor(b)
+        return
+
+    def __call__(self, x: Tensor):
+        l1 = self.y * x
+        l2 = self.b + l1
+        return l2
+
+model = Network([4, 4, 5, 2], [1, 2, 3, 4])
+
+params = get_parameters(model)
+print(params)
+
+input = Tensor([7, 9, 5, 3])
+resultat = model(input).SUM()
+print(resultat)
+resultat.backward()
