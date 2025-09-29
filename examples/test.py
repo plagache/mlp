@@ -114,7 +114,6 @@ class Network:
     def __init__(self, y, b):
         self.y = Tensor(y)
         self.b = Tensor(b)
-        return
 
     def __call__(self, x: Tensor):
         l1 = self.y * x

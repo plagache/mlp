@@ -53,19 +53,20 @@ class Tensor():
             operations.append((element, Operations(ops).name))
             backward_operation = backward_operations[ops]
             gradients = backward_operation(element.data, [*parents])
+            print("gradients:", gradients)
             for parent, gradient in zip(parents, gradients):
                 if parent.grad is None:
                     grad = gradient
                 else:
                     grad += gradient
 
-        list_ops = []
-        for operation in operations:
-            tensor, ops = operation
-            list_ops.append(f"{ops} : {tensor.data.shape}")
-
-        result = " ---> ".join(list_ops)
-        print(f"\n\n{result}")
+        # list_ops = []
+        # for operation in operations:
+        #     tensor, ops = operation
+        #     list_ops.append(f"{ops} : {tensor.data.shape}")
+        #
+        # result = " ---> ".join(list_ops)
+        # print(f"\n\n{result}")
 
         return
 

@@ -40,7 +40,7 @@ size:
 	du -hd 0 ${VENV}
 
 run:
-	${PYTHON} ${EXAMPLES}/${PROGRAM} \
+	PYTHONPATH=. ${PYTHON} ${EXAMPLES}/${PROGRAM} \
 	# ${ARGUMENTS}
 
 test:
