@@ -15,11 +15,12 @@ backward_operations = {
 }
 
 class Tensor():
-    def __init__(self, data, name=None):
+    def __init__(self, data):
         if isinstance(data, np.ndarray):
             self.data = data
         else:
             self.data = np.array(data)
+
         self.grad: np.ndarray = None
         self.context = None
 
@@ -46,19 +47,22 @@ class Tensor():
         """
 
         operations = []
-        self.grad = np.array(1)
+        # self.grad = np.array(1)
+        self.grad = np.ones_like(self.data)
+
 
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
-            operations.append((element, Operations(ops).name))
+            # operations.append((element, Operations(ops).name))
             backward_operation = backward_operations[ops]
             gradients = backward_operation(element.data, [*parents])
-            print("gradients:", gradients)
+            # print("gradients:", gradients)
             for parent, gradient in zip(parents, gradients):
+                print("gradient: ", gradient)
                 if parent.grad is None:
-                    grad = gradient
+                    parent.grad = gradient
                 else:
-                    grad += gradient
+                    parent.grad += gradient
 
         # list_ops = []
         # for operation in operations:
@@ -79,17 +83,27 @@ class Tensor():
             return f"<{self.data.shape}, {self.data}>"
 
     def __add__(self, x):
+        if not isinstance(x, Tensor):
+            print("x was not a Tensor, what the fuck!")
+            x = Tensor(x)
         return self.ADD(x)
 
     def ADD(self, x):
+        print("self.data:", self.data, "x.data:", x.data)
+        print(type(self.data), type(x.data))
         result = Tensor(self.data + x.data)
         result.context = (Operations.ADD, self, x)
         return result
 
     def __mul__(self, x):
+        if not isinstance(x, Tensor):
+            print("x was not a Tensor, what the fuck!")
+            x = Tensor(x)
         return self.MUL(x)
 
     def MUL(self, x):
+        print("self.data:", self.data, "x.data:", x.data)
+        print(type(self.data), type(x.data))
         result = Tensor(self.data * x.data)
         result.context = (Operations.MUL, self, x)
         return result
