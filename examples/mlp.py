@@ -23,6 +23,8 @@ optimizer = SGD([model.l1, model.l2], 0.002)
 for step in range(steps):
     print(step)
     optimizer.zero_grad()
-    resultat = model(input).SUM()
+    resultat = model(input)
+    # loss = 
     resultat.backward()
     optimizer.step()
+    print(resultat)

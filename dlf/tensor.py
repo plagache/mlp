@@ -9,7 +9,7 @@ class Operations(IntEnum):
 
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.MUL: lambda gradient, parents: (parents[1] * gradient, parents[0] * gradient),
+    Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
     Operations.SUM: lambda gradient, parent: (np.full_like(parent, gradient)),
     Operations.NEG: lambda gradient, parents: (None),
 }
@@ -53,24 +53,21 @@ class Tensor():
 
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
-            # operations.append((element, Operations(ops).name))
             backward_operation = backward_operations[ops]
             gradients = backward_operation(element.data, [*parents])
-            # print("gradients:", gradients)
             for parent, gradient in zip(parents, gradients):
-                print("gradient: ", gradient)
                 if parent.grad is None:
                     parent.grad = gradient
                 else:
                     parent.grad += gradient
 
-        # list_ops = []
-        # for operation in operations:
-        #     tensor, ops = operation
-        #     list_ops.append(f"{ops} : {tensor.data.shape}")
-        #
-        # result = " ---> ".join(list_ops)
-        # print(f"\n\n{result}")
+        list_ops = []
+        for operation in operations:
+            tensor, ops = operation
+            list_ops.append(f"{ops} : {tensor.data.shape}")
+
+        result = " ---> ".join(list_ops)
+        print(f"\n\n{result}")
 
         return
 
@@ -83,27 +80,17 @@ class Tensor():
             return f"<{self.data.shape}, {self.data}>"
 
     def __add__(self, x):
-        if not isinstance(x, Tensor):
-            print("x was not a Tensor, what the fuck!")
-            x = Tensor(x)
         return self.ADD(x)
 
     def ADD(self, x):
-        print("self.data:", self.data, "x.data:", x.data)
-        print(type(self.data), type(x.data))
         result = Tensor(self.data + x.data)
         result.context = (Operations.ADD, self, x)
         return result
 
     def __mul__(self, x):
-        if not isinstance(x, Tensor):
-            print("x was not a Tensor, what the fuck!")
-            x = Tensor(x)
         return self.MUL(x)
 
     def MUL(self, x):
-        print("self.data:", self.data, "x.data:", x.data)
-        print(type(self.data), type(x.data))
         result = Tensor(self.data * x.data)
         result.context = (Operations.MUL, self, x)
         return result
