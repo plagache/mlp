@@ -7,6 +7,7 @@ class Operations(IntEnum):
     SUM = auto()
     NEG = auto()
 
+# lets carefully check that we are computing, with same type
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),

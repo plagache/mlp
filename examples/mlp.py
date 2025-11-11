@@ -1,6 +1,23 @@
 import numpy as np
+import random
+import polars as pl
 from dlf.tensor import Tensor
 from dlf.optimizer import SGD
+
+random.seed(42)
+
+# there is no missing value
+# we should look into regularisation
+# Transform M-B in 0-1
+data = pl.read_csv("data.csv", has_header=False)
+print(data.columns)
+
+data = data.with_columns(
+    pl.col("column_2").replace({"M": 1,"B": 0}).alias("column_2")
+)
+print(data)
+types = data["column_2"].value_counts()
+print(types)
 
 class Network:
     def __init__(self):
