@@ -19,6 +19,17 @@ data = data.with_columns(
 # types = data["column_2"].value_counts()
 # print(types)
 
+Y = Tensor(data["column_2"])
+X = data.select(data.columns[2:])
+data_len = len(data)
+print(data_len)
+frac = int(0.8 * data_len)
+X_train = X[:frac]
+X_test = X[frac:]
+print(X_train)
+print(X_test)
+exit() 
+
 class Network:
     def __init__(self):
         self.weight1 = Tensor(np.random.rand(30,))
