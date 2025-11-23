@@ -5,7 +5,8 @@ class Operations(IntEnum):
     ADD = auto()
     MUL = auto()
     SUM = auto()
-    NEG = auto()
+    RELU = auto()
+    SOFTMAX = auto()
     SIGMOID = auto()
 
 # lets carefully check that we are computing, with same type
@@ -13,7 +14,8 @@ backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
     Operations.SUM: lambda gradient, parent: (np.full_like(parent, gradient)),
-    Operations.NEG: lambda gradient, parents: (None),
+    Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
+    Operations.SOFTMAX: lambda gradient, parent: (None),
     Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
 }
 
@@ -103,11 +105,18 @@ class Tensor():
         result.context = (Operations.SUM, self)
         return result
 
-    def SIGMOID(self):
-        result = Tensor(1 / 1 + np.exp(-self.data))
-        result.context = (Operations.SIGMOID, self)
+    def RELU(self):
+        result = Tensor(np.where(self.data < 0, 0, self.data))
+        result.context = (Operations.RELU, self)
         return result
 
     # input as a vector
     def SOFTMAX(self):
-        result = Tensor(np.exp(self.data)/sum(np.exp(self.data)))
+        result = Tensor(np.exp(self.data)/np.sum(np.exp(self.data)))
+        result.context = (Operations.SOFTMAX, self)
+        return result
+
+    def SIGMOID(self):
+        result = Tensor(1 / 1 + np.exp(-self.data))
+        result.context = (Operations.SIGMOID, self)
+        return result
