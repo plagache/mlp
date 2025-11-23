@@ -4,31 +4,27 @@ import polars as pl
 from dlf.tensor import Tensor
 from dlf.optimizer import SGD
 
-random.seed(42)
 
-# there is no missing value
-# we should look into regularisation
-# Transform M-B in 0-1
-data = pl.read_csv("data.csv", has_header=False)
-# print(data.columns)
+def load_dataset():
+    # there is no missing value
+    # we should look into regularisation
+    # Transform M-B in 0-1
+    data = pl.read_csv("data.csv", has_header=False)
+    # print(data.columns)
 
-data = data.with_columns(
-    pl.col("column_2").replace({"M": 1,"B": 0}).cast(pl.Float64).alias("column_2")
-)
-# print(data)
-# types = data["column_2"].value_counts()
-# print(types)
+    data = data.with_columns(pl.col("column_2").replace({"M": 1,"B": 0}).cast(pl.Float64).alias("column_2"))
 
-Y = Tensor(data["column_2"])
-X = data.select(data.columns[2:])
-data_len = len(data)
-print(data_len)
-frac = int(0.8 * data_len)
-X_train = X[:frac]
-X_test = X[frac:]
-print(X_train)
-print(X_test)
-exit() 
+    Y = data["column_2"]
+    X = data.select(data.columns[2:])
+
+    data_len = len(data)
+
+    frac = int(0.8 * data_len)
+
+    return X[:frac], Y[:frac], X[frac:], Y[frac:]
+
+
+X_train, Y_train, X_test, Y_test = load_dataset()
 
 class Network:
     def __init__(self):
@@ -42,8 +38,8 @@ class Network:
 
 model = Network()
 
-target = Tensor(data["column_2"])
-inputs = Tensor(data.select(data.columns[2:]))
+# target = Tensor(data["column_2"])
+# inputs = Tensor(data.select(data.columns[2:]))
 
 steps = 5
 
@@ -52,9 +48,9 @@ optimizer = SGD([model.weight1, model.bias1], 0.002)
 for step in range(steps):
     print(step)
     optimizer.zero_grad()
-    resultat = model(inputs)
+    resultat = model(Tensor(X_train))
     # loss = 
     resultat.backward()
     optimizer.step()
-    print(model.weight1)
+    # print(model.weight1)
     print(resultat)
