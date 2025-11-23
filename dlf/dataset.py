@@ -17,7 +17,3 @@ def load_dataset():
     frac = int(0.8 * data_len)
 
     return X[:frac], Y[:frac], X[frac:], Y[frac:]
-
-if __name__ == "__main__":
-    X_train, Y_train, X_test, Y_test = load_dataset()
-    print("X_train :", X_train)
