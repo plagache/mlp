@@ -3,8 +3,9 @@ from enum import auto, IntEnum
 
 class Operations(IntEnum):
     ADD = auto()
-    MUL = auto()
     SUM = auto()
+    MUL = auto()
+    DOT = auto()
     RELU = auto()
     SOFTMAX = auto()
     SIGMOID = auto()
@@ -12,8 +13,9 @@ class Operations(IntEnum):
 # lets carefully check that we are computing, with same type
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
     Operations.SUM: lambda gradient, parent: (np.full_like(parent, gradient)),
+    Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
+    Operations.DOT: lambda gradient, parents: (np.dot(gradient, parents[1].data.T), np.dot(gradient.T, parents[0].data).T),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
     Operations.SOFTMAX: lambda gradient, parent: (None),
     Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
@@ -92,6 +94,11 @@ class Tensor():
         result.context = (Operations.ADD, self, x)
         return result
 
+    def SUM(self):
+        result = Tensor(np.sum(self.data))
+        result.context = (Operations.SUM, self)
+        return result
+
     def __mul__(self, x):
         return self.MUL(x)
 
@@ -100,9 +107,12 @@ class Tensor():
         result.context = (Operations.MUL, self, x)
         return result
 
-    def SUM(self):
-        result = Tensor(np.sum(self.data))
-        result.context = (Operations.SUM, self)
+    def __matmul__(self, x):
+        return self.DOT(x)
+
+    def DOT(self, x):
+        result = Tensor(np.dot(self.data, x.data))
+        result.context = (Operations.DOT, self)
         return result
 
     def RELU(self):

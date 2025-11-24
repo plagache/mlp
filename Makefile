@@ -46,6 +46,9 @@ run:
 test:
 	PYTHONPATH=. ${PYTHON} ${EXAMPLES}/test.py
 
+tiny:
+	CPU=1 PYTHONPATH=. ${PYTHON} ${EXAMPLES}/tiny.py
+
 clean:
 
 fclean: clean
