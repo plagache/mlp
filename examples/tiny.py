@@ -21,13 +21,21 @@ model = Network()
 
 X_train, Y_train, X_test, Y_test = load_dataset()
 
+def accuracy(prediction, true):
+    return (prediction == true.to_numpy()).mean()
+
 steps = 5
 for step in range(steps):
     print(step)
     resultat = model(Tensor(X_train.to_numpy()))
     values = resultat.numpy()
     probability = np.argmax(values, -1)
+    precision = accuracy(probability, Y_train)
+    # accuracy = (probability == Y_train).mean()
     # print(resultat)
     print(values.tolist())
-    print(f"{probability=}")
+    # print(f"{probability=}")
+    print(f"{precision=}")
+    # print(f"{Y_train.to_numpy()=}")
+    # print(f"{accuracy=}")
     # print(type(resultat))

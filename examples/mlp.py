@@ -36,19 +36,25 @@ steps = 5
 # optimizer = SGD([model.weight1, model.bias1], 0.002)
 # optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
 
+def accuracy(prediction, true):
+    return (prediction == true.to_numpy()).mean()
+
 for step in range(steps):
     print(step)
     # optimizer.zero_grad()
     # print(Tensor(X_train).data)
     # print(X_train)
     resultat = model(Tensor(X_train))
-    probability = np.argmax(resultat.data, -1)
-    # precision = ()
-    # (y_prediction == y_true).sum() / len(y_true)
+    Y_pred = np.argmax(resultat.data, -1)
+    precision = accuracy(Y_pred, Y_train)
+    # accuracy = (Y_pred == Tensor(Y_train).data).mean()
     # loss = 
     # resultat.backward()
     # optimizer.step()
     # print(model.weight1)
-    print(f"{resultat=}, {type(resultat)}")
-    print(f"{probability=}")
+    # print(f"{resultat=}, {type(resultat)}")
+    # print(f"{Y_pred=}")
+    # print(f"{Tensor(Y_train).data=}")
+    # print(Y_pred == Tensor(Y_train).data)
+    print(f"{precision*100}%")
     # print(type(resultat))
