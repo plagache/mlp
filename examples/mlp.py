@@ -30,6 +30,8 @@ class Network:
 model = Network()
 
 X_train, Y_train, X_test, Y_test = load_dataset()
+# for the log_loss to work i need to rewrite the encoding of the Y_s
+# create a tensor with one column per classes
 
 steps = 5
 
@@ -39,24 +41,26 @@ steps = 5
 def accuracy(prediction, true):
     return (prediction == true.to_numpy()).mean()
 
+def log_loss(y_true, y_pred):
+    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+
 for step in range(steps):
     print(step)
     # optimizer.zero_grad()
     # print(Tensor(X_train).data)
     # print(X_train)
-    resultat = model(Tensor(X_train))
-    Y_pred = np.argmax(resultat.data, -1)
-    precision = accuracy(Y_pred, Y_train)
+    Y_pred = model(Tensor(X_train))
+    resultat = np.argmax(Y_pred.data, -1)
+    precision = accuracy(resultat, Y_train)
     # accuracy = (Y_pred == Tensor(Y_train).data).mean()
-    loss = - (Y_train * np.log(Y_pred) + (1 - Y_train) * np.log(1 - Y_pred)) / len(Y_pred)
-    print(f"{loss=}")
-    # resultat.backward()
+    # loss = log_loss(Y_train, Y_pred.data)
+    print(f"{(Y_train * np.log(Y_pred.data) + (1 - Y_train) * np.log(1 - Y_pred.data))=}")
+    print(f"{Y_train}")
+    # print(f"{loss=}")
     # optimizer.step()
     # print(model.weight1)
-    # print(f"{resultat=}, {type(resultat)}")
-    print(f"{Y_pred=}")
-    print(Y_train * np.log(Y_pred))
-    print(f"{Y_train.to_numpy()=}")
+    # print(f"{Y_pred=}")
+    # print(y_train * np.log(y_pred))
+    # print(f"{y_train.to_numpy()=}")
     # print(Y_pred == Y_train.to_numpy())
-    print(f"{precision*100}%")
-    # print(type(resultat))
+    # print(f"{precision*100}%")
