@@ -38,29 +38,24 @@ steps = 5
 # optimizer = SGD([model.weight1, model.bias1], 0.002)
 # optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
 
-def accuracy(prediction, true):
-    return (prediction == true.to_numpy()).mean()
+def accuracy(true, prediction):
+    true = np.argmax(true.to_numpy(), axis=-1)
+    prediction = np.argmax(prediction.data, axis=-1)
+    return (true == prediction).mean()
 
 def log_loss(y_true, y_pred):
     return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
 for step in range(steps):
     print(step)
-    # optimizer.zero_grad()
-    # print(Tensor(X_train).data)
-    # print(X_train)
+
     Y_pred = model(Tensor(X_train))
-    resultat = np.argmax(Y_pred.data, -1)
-    precision = accuracy(resultat, Y_train)
-    # accuracy = (Y_pred == Tensor(Y_train).data).mean()
-    # loss = log_loss(Y_train, Y_pred.data)
-    print(f"{(Y_train * np.log(Y_pred.data) + (1 - Y_train) * np.log(1 - Y_pred.data))=}")
-    print(f"{Y_train}")
-    # print(f"{loss=}")
+
+    precision = accuracy(Y_train, Y_pred)
+    print(f"{precision*100}%")
+
+    loss = log_loss(Y_train.to_numpy(), Y_pred.data)
+    print(f"{loss=}")
+
     # optimizer.step()
     # print(model.weight1)
-    # print(f"{Y_pred=}")
-    # print(y_train * np.log(y_pred))
-    # print(f"{y_train.to_numpy()=}")
-    # print(Y_pred == Y_train.to_numpy())
-    # print(f"{precision*100}%")
