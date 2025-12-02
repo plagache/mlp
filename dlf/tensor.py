@@ -6,6 +6,8 @@ class Operations(IntEnum):
     SUM = auto()
     MUL = auto()
     DOT = auto()
+    LOG = auto()
+    EXP = auto()
     RELU = auto()
     SOFTMAX = auto()
     SIGMOID = auto()
@@ -17,6 +19,8 @@ backward_operations = {
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
     Operations.DOT: lambda gradient, parents: (np.dot(gradient, parents[1].data.T), np.dot(gradient.T, parents[0].data).T),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
+    Operations.LOG: lambda gradient, parent: (1 / gradient),
+    Operations.EXP: lambda gradient, parent: (gradient),
     Operations.SOFTMAX: lambda gradient, parent: (None),
     Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
 }
@@ -112,12 +116,22 @@ class Tensor():
 
     def DOT(self, x):
         result = Tensor(np.dot(self.data, x.data))
-        result.context = (Operations.DOT, self)
+        result.context = (Operations.DOT, self, x)
         return result
 
     def RELU(self):
         result = Tensor(np.where(self.data < 0, 0, self.data))
         result.context = (Operations.RELU, self)
+        return result
+
+    def LOG(self):
+        result = Tensor(np.log(self.data))
+        result.context = (Operations.LOG, self)
+        return result
+
+    def EXP(self):
+        result = Tensor(np.exp(self.data))
+        result.context = (Operations.EXP, self)
         return result
 
     # input as a vector

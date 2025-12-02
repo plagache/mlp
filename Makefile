@@ -44,7 +44,7 @@ run:
 	# ${ARGUMENTS}
 
 test:
-	PYTHONPATH=. ${PYTHON} ${EXAMPLES}/test.py
+	CPU=1 PYTHONPATH=. ${PYTHON} ${EXAMPLES}/test.py
 
 tiny:
 	CPU=1 PYTHONPATH=. ${PYTHON} ${EXAMPLES}/tiny.py
