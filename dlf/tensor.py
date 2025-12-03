@@ -15,12 +15,12 @@ class Operations(IntEnum):
 # lets carefully check that we are computing, with same type
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUM: lambda gradient, parent: (np.full_like(parent, gradient)),
+    Operations.SUM: lambda gradient, parent: (np.full_like(parent[0].data, gradient)),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
-    Operations.DOT: lambda gradient, parents: (np.dot(gradient, parents[1].data.T), np.dot(gradient.T, parents[0].data).T),
+    Operations.DOT: lambda gradient, parents: (np.dot(gradient, parents[1].data.T), np.dot(parents[0].data, gradient.T).T),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
-    Operations.LOG: lambda gradient, parent: (1 / gradient),
-    Operations.EXP: lambda gradient, parent: (gradient),
+    Operations.LOG: lambda gradient, parent: (1 / parent[0].data),
+    Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data)),
     Operations.SOFTMAX: lambda gradient, parent: (None),
     Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
 }
@@ -58,14 +58,14 @@ class Tensor():
         """
 
         operations = []
-        # self.grad = np.array(1)
-        self.grad = np.ones_like(self.data)
+        self.grad = np.array([1])
+        # self.grad = np.ones_like(self.data)
 
 
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
             backward_operation = backward_operations[ops]
-            gradients = backward_operation(element.data, [*parents])
+            gradients = backward_operation(element.grad, [*parents])
             for parent, gradient in zip(parents, gradients):
                 if parent.grad is None:
                     parent.grad = gradient
