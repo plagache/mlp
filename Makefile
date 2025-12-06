@@ -49,6 +49,9 @@ test:
 tiny:
 	CPU=1 PYTHONPATH=. ${PYTHON} ${EXAMPLES}/tiny.py
 
+nvidia:
+	watch -n0.1 nvidia-smi
+
 clean:
 
 fclean: clean
