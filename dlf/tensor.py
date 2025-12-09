@@ -15,9 +15,9 @@ class Operations(IntEnum):
 # lets carefully check that we are computing, with same type
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUM: lambda gradient, parent: (np.full_like(parent[0].data, gradient)),
+    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
-    Operations.DOT: lambda gradient, parents: (np.dot(gradient, parents[1].data.T), np.dot(parents[0].data, gradient.T).T),
+    Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data, (gradient @ parents[0].data.T).T,),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
     Operations.LOG: lambda gradient, parent: (1 / parent[0].data),
     Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data)),
@@ -57,10 +57,8 @@ class Tensor():
         apply backward from backward_operations[ops] on each nodes
         """
 
-        operations = []
         self.grad = np.array([1])
         # self.grad = np.ones_like(self.data)
-
 
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
@@ -71,15 +69,6 @@ class Tensor():
                     parent.grad = gradient
                 else:
                     parent.grad += gradient
-
-        list_ops = []
-        for operation in operations:
-            tensor, ops = operation
-            list_ops.append(f"{ops} : {tensor.data.shape}")
-
-        result = " ---> ".join(list_ops)
-        print(f"\n\n{result}")
-
         return
 
     def __repr__(self):
@@ -114,6 +103,8 @@ class Tensor():
     def __matmul__(self, x):
         return self.DOT(x)
 
+    # no broadcast
+    # 1D @ 2D would require shape expand/ and reduce on specifique axis
     def DOT(self, x):
         result = Tensor(np.dot(self.data, x.data))
         result.context = (Operations.DOT, self, x)
@@ -144,3 +135,7 @@ class Tensor():
         result = Tensor(1 / 1 + np.exp(-self.data))
         result.context = (Operations.SIGMOID, self)
         return result
+
+    @property
+    def T(self):
+        return type(self) (self.data.T)

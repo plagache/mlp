@@ -57,5 +57,7 @@ for step in range(steps):
     loss = log_loss(Y_train.to_numpy(), Y_pred.data)
     print(f"{loss=}")
 
+    loss.backward()
+
     # optimizer.step()
     # print(model.weight1)

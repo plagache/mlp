@@ -7,7 +7,8 @@ print(Device.DEFAULT)
 
 x = Tiny.eye(3, requires_grad=True)
 y = Tiny([[2.0, 0.5, 0.1]], requires_grad=True)
-d = y.matmul(x)
+# d = x.dot(y.T)
+d = x.add(y.T)
 s = d.sum()
 # l = y.log()
 # s = l.sum()
@@ -27,12 +28,15 @@ print(f"{d.grad.tolist()=}")  # dz/dy
 # print(f"{l.grad.tolist()=}")  # dz/dx
 # print(f"{e.grad.tolist()=}")  # dz/dx
 print(f"{y.grad.tolist()=}")  # dz/dy
+print(f"{y.grad.shape=}")  # dz/dy
 print(f"{x.grad.tolist()=}")  # dz/dy
 
 from dlf.tensor import Tensor
 xd = Tensor([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 yd = Tensor([[2.0, 0.5, 0.1]])
-dd = yd.DOT(xd)
+# dd = yd.DOT(xd)
+# dd = xd.DOT(yd.T)
+dd = xd.ADD(yd.T)
 sd = dd.SUM()
 # ld = yd.LOG()
 # sd = ld.SUM()
@@ -52,4 +56,6 @@ print(f"{dd.grad=}")
 # print(f"{ld.grad=}")
 # print(f"{ed.grad=}")
 print(f"{yd.grad=}")
+print(f"{yd.grad.shape=}")
+print(f"{yd.data.shape=}")
 print(f"{xd.grad=}")
