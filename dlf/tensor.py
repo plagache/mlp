@@ -15,9 +15,13 @@ class Operations(IntEnum):
 # lets carefully check that we are computing, with same type
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,),
+    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,
+                                              ),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
-    Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data, (gradient @ parents[0].data.T).T,),
+    Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data, (gradient @ parents[0].data.T).T,
+                                               print(f"{gradient=}"),
+                                               print(f"{parents=}")
+                                               ),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
     Operations.LOG: lambda gradient, parent: (1 / parent[0].data),
     Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data)),
@@ -63,7 +67,10 @@ class Tensor():
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
             backward_operation = backward_operations[ops]
+            # Outputs of gradients is a Tuple, and should be an ndarray
             gradients = backward_operation(element.grad, [*parents])
+            print(f"{gradients=}")
+            print(f"{type(gradients)=}")
             for parent, gradient in zip(parents, gradients):
                 if parent.grad is None:
                     parent.grad = gradient
