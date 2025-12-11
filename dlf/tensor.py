@@ -11,22 +11,20 @@ class Operations(IntEnum):
     RELU = auto()
     SOFTMAX = auto()
     SIGMOID = auto()
+    T = auto()
 
 # lets carefully check that we are computing, with same type
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,
-                                              ),
+    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
-    Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data, (gradient @ parents[0].data.T).T,
-                                               print(f"{gradient=}"),
-                                               print(f"{parents=}")
-                                               ),
+    Operations.DOT: lambda gradient, parents: ((parents[1].data @ gradient).T, parents[0].data @ gradient),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
     Operations.LOG: lambda gradient, parent: (1 / parent[0].data),
     Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data)),
     Operations.SOFTMAX: lambda gradient, parent: (None),
     Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
+    Operations.T: lambda gradient, parents: (gradient.T),
 }
 
 class Tensor():
@@ -67,10 +65,9 @@ class Tensor():
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
             backward_operation = backward_operations[ops]
-            # Outputs of gradients is a Tuple, and should be an ndarray
             gradients = backward_operation(element.grad, [*parents])
-            print(f"{gradients=}")
-            print(f"{type(gradients)=}")
+            if len(parents) == 1:
+                gradients = [backward_operation(element.grad, [*parents])]
             for parent, gradient in zip(parents, gradients):
                 if parent.grad is None:
                     parent.grad = gradient
@@ -79,11 +76,6 @@ class Tensor():
         return
 
     def __repr__(self):
-        if self.context is not None:
-            # print(self.context)
-            ops, *parents = self.context
-            return f"<{self.data.shape}, {self.data}, {ops}>"
-        else:
             return f"<{self.data.shape}, {self.data}>"
 
     def __add__(self, x):
@@ -110,6 +102,11 @@ class Tensor():
     def __matmul__(self, x):
         return self.DOT(x)
 
+    def mean(self):
+        N = self.data.size
+        div = Tensor([1/N])
+        return self.SUM.MUL(div)
+
     # no broadcast
     # 1D @ 2D would require shape expand/ and reduce on specifique axis
     def DOT(self, x):
@@ -132,7 +129,7 @@ class Tensor():
         result.context = (Operations.EXP, self)
         return result
 
-    # input as a vector
+    # input is a vector, of which we want to determine the highest probability
     def SOFTMAX(self):
         result = Tensor(np.exp(self.data)/np.sum(np.exp(self.data)))
         result.context = (Operations.SOFTMAX, self)
@@ -143,6 +140,12 @@ class Tensor():
         result.context = (Operations.SIGMOID, self)
         return result
 
+    # Need to remove Transpose and perform it before creating the Tensor
+    # Actually, it can be done on a numpy array that will feed to Tensor once the Transpose is done
+    #
+    # Or we would have to implement a Transpose Backward, that return the Transpose of the gradient
     @property
     def T(self):
-        return type(self) (self.data.T)
+        result = type(self) (self.data.T)
+        result.context = (Operations.T, self)
+        return result
