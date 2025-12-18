@@ -24,7 +24,7 @@ backward_operations = {
     Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data)),
     Operations.SOFTMAX: lambda gradient, parent: (None),
     Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
-    Operations.T: lambda gradient, parents: (gradient.T),
+    Operations.T: lambda gradient, parent: (gradient.T),
 }
 
 class Tensor():
@@ -104,8 +104,8 @@ class Tensor():
 
     def mean(self):
         N = self.data.size
-        div = Tensor([1/N])
-        return self.SUM.MUL(div)
+        fraction = Tensor([1/N])
+        return self.SUM.MUL(fraction)
 
     # no broadcast
     # 1D @ 2D would require shape expand/ and reduce on specifique axis
