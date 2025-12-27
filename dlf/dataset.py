@@ -8,7 +8,7 @@ def load_dataset():
     data = data.with_columns(pl.col("column_2").replace({"M": 1,"B": 0}).cast(pl.Float64).alias("Malign"))
     data = data.with_columns(pl.col("column_2").replace({"M": 0,"B": 1}).cast(pl.Float64).alias("Benign"))
 
-    Y = data["Malign", "Benign"]
+    Y = data.select(["Malign", "Benign"])
     X = data.select(data.columns[2:32])
 
     data_len = len(data)
