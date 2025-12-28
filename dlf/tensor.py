@@ -105,7 +105,7 @@ class Tensor():
     def mean(self):
         N = self.data.size
         fraction = Tensor([1/N])
-        return self.SUM.MUL(fraction)
+        return self.SUM().MUL(fraction)
 
     # no broadcast
     # 1D @ 2D would require shape expand/ and reduce on specifique axis
