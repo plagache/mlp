@@ -1,6 +1,7 @@
 import numpy as np
 from enum import auto, IntEnum
 
+
 class Operations(IntEnum):
     ADD = auto()
     SUM = auto()
@@ -13,30 +14,38 @@ class Operations(IntEnum):
     SIGMOID = auto()
     T = auto()
 
+
 # lets carefully check that we are computing, with same type
 # (element), returns a tuple
 # (element) would just return the element
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient),
-    Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
-    Operations.DOT: lambda gradient, parents: ((parents[1].data @ gradient).T, parents[0].data @ gradient),
-    Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1))),
-    Operations.LOG: lambda gradient, parent: (1 / parent[0].data),
-    Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data)),
-    Operations.SOFTMAX: lambda gradient, parent: (None),
-    Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient)),
-    Operations.T: lambda gradient, parent: (gradient.T),
+    Operations.SUM: lambda gradient, parent: np.ones_like(parent[0].data) * gradient,
+    Operations.MUL: lambda gradient, parents: (
+        parents[1].data * gradient,
+        parents[0].data * gradient,
+    ),
+    Operations.DOT: lambda gradient, parents: (
+        (parents[1].data @ gradient).T,
+        parents[0].data @ gradient,
+    ),
+    Operations.RELU: lambda gradient, parent: gradient * (np.where(parent <= 0, 0, 1)),
+    Operations.LOG: lambda gradient, parent: 1 / parent[0].data,
+    Operations.EXP: lambda gradient, parent: np.exp(parent[0].data),
+    Operations.SOFTMAX: lambda gradient, parent: None,
+    Operations.SIGMOID: lambda gradient, parent: gradient * (1 - gradient),
+    Operations.T: lambda gradient, parent: gradient.T,
 }
 
-class Tensor():
+
+class Tensor:
     def __init__(self, data):
         if isinstance(data, np.ndarray):
             self.data = data
         else:
             self.data = np.array(data)
 
-        self.grad: np.ndarray = None
+        self.grad: np.ndarray | None = None
         self.context = None
 
     def topo_sort(self):
@@ -44,16 +53,17 @@ class Tensor():
         stack = [(self, False)]
         while stack:
             node, visited = stack.pop()
-            if node in ret: continue
+            if node in ret:
+                continue
             if not visited:
                 if node.context is not None:
                     stack.append((node, True))
                     ops, *parents = node.context
-                    for parent in parents: stack.append((parent, False))
+                    for parent in parents:
+                        stack.append((parent, False))
             else:
                 ret[node] = None
         return ret
-
 
     def backward(self):
         """
@@ -78,7 +88,7 @@ class Tensor():
         return
 
     def __repr__(self):
-            return f"<{self.data.shape}, {self.data}>"
+        return f"<{self.data.shape}, {self.data}>"
 
     def __add__(self, x):
         return self.ADD(x)
@@ -106,7 +116,7 @@ class Tensor():
 
     def mean(self):
         N = self.data.size
-        fraction = Tensor([1/N])
+        fraction = Tensor([1 / N])
         return self.SUM().MUL(fraction)
 
     # no broadcast
@@ -133,7 +143,7 @@ class Tensor():
 
     # input is a vector, of which we want to determine the highest probability
     def SOFTMAX(self):
-        result = Tensor(np.exp(self.data)/np.sum(np.exp(self.data)))
+        result = Tensor(np.exp(self.data) / np.sum(np.exp(self.data)))
         result.context = (Operations.SOFTMAX, self)
         return result
 
@@ -148,6 +158,6 @@ class Tensor():
     # Or we would have to implement a Transpose Backward, that return the Transpose of the gradient
     @property
     def T(self):
-        result = type(self) (self.data.T)
+        result = type(self)(self.data.T)
         result.context = (Operations.T, self)
         return result
