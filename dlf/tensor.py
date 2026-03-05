@@ -14,6 +14,8 @@ class Operations(IntEnum):
     T = auto()
 
 # lets carefully check that we are computing, with same type
+# (element), returns a tuple
+# (element) would just return the element
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
     Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient),
