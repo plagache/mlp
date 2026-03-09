@@ -7,34 +7,27 @@ class Operations(IntEnum):
     SUM = auto()
     MUL = auto()
     DOT = auto()
+    RELU = auto()
     LOG = auto()
     EXP = auto()
-    RELU = auto()
     SOFTMAX = auto()
     SIGMOID = auto()
     T = auto()
+    EXAMPLE = auto()
 
 
-# lets carefully check that we are computing, with same type
-# (element), returns a tuple
-# (element) would just return the element
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUM: lambda gradient, parent: np.ones_like(parent[0].data) * gradient,
-    Operations.MUL: lambda gradient, parents: (
-        parents[1].data * gradient,
-        parents[0].data * gradient,
-    ),
-    Operations.DOT: lambda gradient, parents: (
-        (parents[1].data @ gradient).T,
-        parents[0].data @ gradient,
-    ),
-    Operations.RELU: lambda gradient, parent: gradient * (np.where(parent <= 0, 0, 1)),
-    Operations.LOG: lambda gradient, parent: 1 / parent[0].data,
-    Operations.EXP: lambda gradient, parent: np.exp(parent[0].data),
-    Operations.SOFTMAX: lambda gradient, parent: None,
-    Operations.SIGMOID: lambda gradient, parent: gradient * (1 - gradient),
-    Operations.T: lambda gradient, parent: gradient.T,
+    Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,),
+    Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
+    Operations.DOT: lambda gradient, parents: ((parents[1].data @ gradient).T, parents[0].data @ gradient),
+    Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent <= 0, 0, 1)),),
+    Operations.LOG: lambda gradient, parent: (1 / parent[0].data,),
+    Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data),),
+    Operations.SOFTMAX: lambda gradient, parent: (None,),
+    Operations.SIGMOID: lambda gradient, parent: (gradient * (1 - gradient),),
+    Operations.T: lambda gradient, parent: (gradient.T,),
+    Operations.EXAMPLE: lambda gradient, parent: (None,),
 }
 
 
@@ -46,7 +39,7 @@ class Tensor:
             self.data = np.array(data)
 
         self.grad: np.ndarray | None = None
-        self.context = None
+        self.context: tuple | None = None
 
     def topo_sort(self):
         ret = dict()
@@ -148,7 +141,7 @@ class Tensor:
         return result
 
     def SIGMOID(self):
-        result = Tensor(1 / 1 + np.exp(-self.data))
+        result = Tensor(1 / (1 + np.exp(-self.data)))
         result.context = (Operations.SIGMOID, self)
         return result
 
