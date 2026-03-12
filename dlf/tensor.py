@@ -64,8 +64,8 @@ class Tensor:
 
     def backward(self):
         """
-        input: a list of nodes as a paramater (the result from the topo_sort)
-        apply backward from backward_operations[ops] on each nodes
+        Input: a dict of nodes (result from topo_sort)
+        apply backward with backward_operations[ops] on each nodes
         """
 
         # self.grad = np.array([1])
@@ -114,9 +114,15 @@ class Tensor:
         fraction = Tensor([1 / N])
         return self.SUM().MUL(fraction)
 
-    # no broadcast
-    # 1D @ 2D would require shape expand/ and reduce on specifique axis
     def DOT(self, x):
+        """
+        Matrix multiplication.
+
+        Both operands must be 2D. For single samples, use shape (1, n) not (n,).
+        Example: x = Tensor([[1.0, 2.0]])  # shape (1, 2), not Tensor([1.0, 2.0])
+        No Broadcast
+        1D @ 2D would require shape expand/ and reduce on specifique axis
+        """
         result = Tensor(np.dot(self.data, x.data))
         result.context = (Operations.DOT, self, x)
         return result
