@@ -22,10 +22,14 @@ backward_operations = {
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
     Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data.T, parents[0].data.T @ gradient),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent[0].data <= 0, 0, 1)),),
-    Operations.LOG: lambda gradient, parent: (1 / parent[0].data,),
-    Operations.EXP: lambda gradient, parent: (np.exp(parent[0].data),),
+    Operations.LOG: lambda gradient, parent: (gradient * (1 / parent[0].data),),
+    Operations.EXP: lambda gradient, parent: (gradient * np.exp(parent[0].data),),
     Operations.SOFTMAX: lambda gradient, parent: (None,),
-    Operations.SIGMOID: lambda gradient, parent: gradient * (1 / (1 + np.exp(-parent[0].data))) * (np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data))),
+    # np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data)) = 1 - σ(x)
+    # Proof: e^(-x)/(1+e^(-x)) = (1+e^(-x) - 1)/(1+e^(-x)) = 1 - 1/(1+e^(-x)) = 1 - σ(x)
+    # σ′(x) = σ(x) · (1 - σ(x))
+    # or σ′(x) = gradient * σ(x) * (1 - σ(x))
+    # Operations.SIGMOID: lambda gradient, parent: (gradient * (1 / (1 + np.exp(-parent[0].data))) * (np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data))),),
     Operations.T: lambda gradient, parent: (gradient.T,),
     Operations.EXAMPLE: lambda gradient, parent: (None,),
 }
@@ -71,8 +75,6 @@ class Tensor:
             ops, *parents = element.context
             backward_operation = backward_operations[ops]
             gradients = backward_operation(element.grad, [*parents])
-            # if len(parents) == 1:
-            #     gradients = [backward_operation(element.grad, [*parents])]
             for parent, gradient in zip(parents, gradients):
                 if parent.grad is None:
                     parent.grad = gradient
