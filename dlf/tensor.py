@@ -15,7 +15,8 @@ class Operations(IntEnum):
     SOFTMAX = auto()
     SIGMOID = auto()
     T = auto()
-    EXAMPLE = auto()
+    # EXAMPLE = auto()
+
 
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
@@ -34,8 +35,14 @@ backward_operations = {
     # or σ′(x) = gradient * σ(x) * (1 - σ(x))
     # Operations.SIGMOID: lambda gradient, parent: (gradient * (1 / (1 + np.exp(-parent[0].data))) * (np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data))),),
     Operations.T: lambda gradient, parent: (gradient.T,),
-    Operations.EXAMPLE: lambda gradient, parent: (None,),
+    # Operations.EXAMPLE: lambda gradient, parent: (None,),
 }
+
+
+def _ensure_tensor(x):
+    if isinstance(x, Tensor):
+        return x
+    return Tensor(x)
 
 
 class Tensor:
@@ -47,6 +54,10 @@ class Tensor:
 
         self.grad: np.ndarray | None = None
         self.context: tuple | None = None
+
+    @staticmethod
+    def ones_like(tensor):
+        return Tensor(np.ones_like(tensor.data))
 
     def topo_sort(self):
         ret = dict()
@@ -88,21 +99,33 @@ class Tensor:
     def __repr__(self):
         return f"<{self.data.shape}, {self.data}>"
 
+    def __neg__(self):
+        return self * -1
+
     def __add__(self, x):
         return self.ADD(x)
 
     def ADD(self, x):
+        x = _ensure_tensor(x)
         result = Tensor(self.data + x.data)
         result.context = (Operations.ADD, self, x)
         return result
+
+    def __radd__(self, x):
+        return self.ADD(x)
 
     def __sub__(self, x):
         return self.SUB(x)
 
     def SUB(self, x):
+        x = _ensure_tensor(x)
         result = Tensor(self.data - x.data)
         result.context = (Operations.SUB, self, x)
         return result
+
+    def __rsub__(self, x):
+        x = _ensure_tensor(x)
+        return x.SUB(self)
 
     def SUM(self):
         result = Tensor(np.sum(self.data))
@@ -113,17 +136,26 @@ class Tensor:
         return self.MUL(x)
 
     def MUL(self, x):
+        x = _ensure_tensor(x)
         result = Tensor(self.data * x.data)
         result.context = (Operations.MUL, self, x)
         return result
+
+    def __rmul__(self, x):
+        return self.MUL(x)
 
     def __truediv__(self, x):
         return self.DIV(x)
 
     def DIV(self, x):
+        x = _ensure_tensor(x)
         result = Tensor(self.data / x.data)
         result.context = (Operations.DIV, self, x)
         return result
+
+    def __rtruediv__(self, x):
+        x = _ensure_tensor(x)
+        return x.DIV(self)
 
     def __matmul__(self, x):
         return self.DOT(x)
@@ -151,21 +183,33 @@ class Tensor:
         result.context = (Operations.RELU, self)
         return result
 
+    def log(self):
+        return self.LOG()
+
     def LOG(self):
         result = Tensor(np.log(self.data))
         result.context = (Operations.LOG, self)
         return result
+
+    def exp(self):
+        return self.EXP()
 
     def EXP(self):
         result = Tensor(np.exp(self.data))
         result.context = (Operations.EXP, self)
         return result
 
+    def softMax(self):
+        return self.SOFTMAX()
+
     # input is a vector, of which we want to determine the highest probability
     def SOFTMAX(self):
         result = Tensor(np.exp(self.data) / np.sum(np.exp(self.data)))
         result.context = (Operations.SOFTMAX, self)
         return result
+
+    def sigmoid(self):
+        return self.SIGMOID()
 
     def SIGMOID(self):
         result = Tensor(1 / (1 + np.exp(-self.data)))
