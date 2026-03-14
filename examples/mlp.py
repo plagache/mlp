@@ -17,8 +17,8 @@ class Network:
         x = self.l1(x).RELU()
         x = self.l2(x).RELU()
         x = self.l3(x).RELU()
-        x = self.l4(x).RELU()
-        return x.SOFTMAX()
+        x = self.l4(x).SOFTMAX()
+        return x
 
 
 model = Network()
@@ -61,4 +61,4 @@ for step in range(steps):
     loss_val.backward()
 
     optimizer.step()
-    # print(model.l1.weight)
+    print(model.l1.weight)

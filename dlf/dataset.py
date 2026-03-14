@@ -1,8 +1,10 @@
 import polars as pl
 
 def load_dataset():
-    # there is no missing value
-    # we should look into regularisation
+    """
+    there is no missing value
+    we should look into regularisation
+    """
     data = pl.read_csv("data.csv", has_header=False)
 
     data = data.with_columns(pl.col("column_2").replace({"M": 1,"B": 0}).cast(pl.Float64).alias("Malign"))
