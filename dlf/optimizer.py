@@ -14,7 +14,7 @@ class SGD():
 
     def step(self):
         for param in self.params:
-            # if param.grad is not None:
+            if param.grad is not None:
                 param.data -= self.lr * param.grad
  
     def zero_grad(self):

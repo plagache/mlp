@@ -27,7 +27,8 @@ X_train, Y_train, X_test, Y_test = load_dataset()
 
 steps = 5
 
-optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
+optimizer = SGD([model.l1.weight, model.l2.weight], 0.002)
+# optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
 
 
 # def accuracy(true, prediction):
@@ -51,6 +52,7 @@ for step in range(steps):
 
     loss_val = loss(Y, P)
     print(f"{loss_val.data=}")
+    print(f"{P.data=}")
 
     loss_val.backward()
 
