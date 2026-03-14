@@ -5,6 +5,7 @@ from dlf.optimizer import SGD
 from dlf.dataset import load_dataset
 from dlf.nn import Linear
 
+
 class Network:
     def __init__(self):
         self.l1 = Linear(30, 10)
@@ -27,6 +28,7 @@ class Network:
         x = self.l4(x).RELU()
         return x.SOFTMAX()
 
+
 model = Network()
 
 X_train, Y_train, X_test, Y_test = load_dataset()
@@ -38,26 +40,30 @@ steps = 5
 # optimizer = SGD([model.weight1, model.bias1], 0.002)
 # optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
 
-def accuracy(true, prediction):
-    true = np.argmax(true.to_numpy(), axis=-1)
-    prediction = np.argmax(prediction.data, axis=-1)
-    return (true == prediction).mean()
 
-def log_loss(y_true, y_pred):
-    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+# def accuracy(true, prediction):
+#     true = np.argmax(true.to_numpy(), axis=-1)
+#     prediction = np.argmax(prediction.data, axis=-1)
+#     return (true == prediction).mean()
+
+
+def loss(y, p):
+    return -(y * p.log() + (1 - y) * (1 - p).log()).mean()
+
 
 for step in range(steps):
     print(step)
 
-    Y_pred = model(Tensor(X_train))
+    Y = Tensor(Y_train)
+    P = model(Tensor(X_train))
 
-    precision = accuracy(Y_train, Y_pred)
-    print(f"{precision*100}%")
+    # precision = accuracy(Y_train, P)
+    # print(f"{precision * 100}%")
 
-    loss = log_loss(Y_train.to_numpy(), Y_pred.data)
-    print(f"{loss=}")
+    loss_val = loss(Y, P)
+    print(f"{loss_val.data=}")
 
-    loss.backward()
+    loss_val.backward()
 
     # optimizer.step()
     # print(model.weight1)
