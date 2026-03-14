@@ -4,8 +4,10 @@ from enum import auto, IntEnum
 
 class Operations(IntEnum):
     ADD = auto()
+    SUB = auto()
     SUM = auto()
     MUL = auto()
+    DIV = auto()
     DOT = auto()
     RELU = auto()
     LOG = auto()
@@ -15,11 +17,12 @@ class Operations(IntEnum):
     T = auto()
     EXAMPLE = auto()
 
-
 backward_operations = {
     Operations.ADD: lambda gradient, parent: (gradient, gradient),
+    Operations.SUB: lambda gradient, parent: (gradient, -gradient),
     Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
+    Operations.DIV: lambda gradient, parents: (gradient / parents[1].data, (-parents[0].data * gradient / np.square(parents[1].data))),
     Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data.T, parents[0].data.T @ gradient),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent[0].data <= 0, 0, 1)),),
     Operations.LOG: lambda gradient, parent: (gradient * (1 / parent[0].data),),
@@ -93,6 +96,14 @@ class Tensor:
         result.context = (Operations.ADD, self, x)
         return result
 
+    def __sub__(self, x):
+        return self.SUB(x)
+
+    def SUB(self, x):
+        result = Tensor(self.data - x.data)
+        result.context = (Operations.SUB, self, x)
+        return result
+
     def SUM(self):
         result = Tensor(np.sum(self.data))
         result.context = (Operations.SUM, self)
@@ -104,6 +115,14 @@ class Tensor:
     def MUL(self, x):
         result = Tensor(self.data * x.data)
         result.context = (Operations.MUL, self, x)
+        return result
+
+    def __truediv__(self, x):
+        return self.DIV(x)
+
+    def DIV(self, x):
+        result = Tensor(self.data / x.data)
+        result.context = (Operations.DIV, self, x)
         return result
 
     def __matmul__(self, x):
