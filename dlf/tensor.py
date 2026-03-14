@@ -28,7 +28,7 @@ backward_operations = {
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent[0].data <= 0, 0, 1)),),
     Operations.LOG: lambda gradient, parent: (gradient * (1 / parent[0].data),),
     Operations.EXP: lambda gradient, parent: (gradient * np.exp(parent[0].data),),
-    Operations.SOFTMAX: lambda gradient, parent: (None,),
+    Operations.SOFTMAX: lambda gradient, parent: (parent[0].data * (gradient - (gradient * parent[0].data).sum(axis=-1, keepdims=True)),),
     # np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data)) = 1 - σ(x)
     # Proof: e^(-x)/(1+e^(-x)) = (1+e^(-x) - 1)/(1+e^(-x)) = 1 - 1/(1+e^(-x)) = 1 - σ(x)
     # σ′(x) = σ(x) · (1 - σ(x))
