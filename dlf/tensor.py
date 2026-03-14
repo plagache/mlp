@@ -102,6 +102,10 @@ class Tensor:
     def __neg__(self):
         return self * -1
 
+    def __getitem__(self, key):
+        result = Tensor(self.data[key])
+        return result
+
     def __add__(self, x):
         return self.ADD(x)
 
@@ -202,9 +206,13 @@ class Tensor:
     def softMax(self):
         return self.SOFTMAX()
 
-    # input is a vector, of which we want to determine the highest probability
     def SOFTMAX(self):
-        result = Tensor(np.exp(self.data) / np.sum(np.exp(self.data)))
+        """
+        Input is a vector, of which we want to determine the highest probability
+        Return a [P, 1 - P]
+        """
+        exp_data = np.exp(self.data - np.max(self.data, axis=-1, keepdims=True))
+        result = Tensor(exp_data / np.sum(exp_data, axis=-1, keepdims=True))
         result.context = (Operations.SOFTMAX, self)
         return result
 

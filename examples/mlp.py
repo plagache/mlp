@@ -25,9 +25,9 @@ model = Network()
 
 X_train, Y_train, X_test, Y_test = load_dataset()
 
-steps = 5
+steps = 100
 
-optimizer = SGD([model.l1.weight, model.l2.weight], 0.002)
+optimizer = SGD([model.l1.weight, model.l2.weight, model.l3.weight, model.l4.weight], 0.002)
 # optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
 
 
@@ -38,6 +38,8 @@ optimizer = SGD([model.l1.weight, model.l2.weight], 0.002)
 
 
 def loss(y, p):
+    p = p[:, 0]
+    y = y[:, 0]
     return -(y * p.log() + (1 - y) * (1 - p).log()).mean()
 
 
@@ -52,9 +54,11 @@ for step in range(steps):
 
     loss_val = loss(Y, P)
     print(f"{loss_val.data=}")
-    print(f"{P.data=}")
+    # print(f"{P.data=}")
+
+    optimizer.zero_grad()
 
     loss_val.backward()
 
     optimizer.step()
-    print(model.l1.weight)
+    # print(model.l1.weight)
