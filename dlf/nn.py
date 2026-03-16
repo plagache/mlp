@@ -15,9 +15,8 @@ class Linear:
         """
         use the he uniform to better work with RELU
         """
-        bound = 1 / math.sqrt(in_features)
+        bound = np.sqrt(6/in_features)
         self.weight = Tensor(np.random.uniform(-bound, bound, (in_features, out_features)))
-        # self.bias = Tensor(np.random.uniform(-bound, bound, (out_features,)))
 
     def __call__(self, x):
         return x @ self.weight
