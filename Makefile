@@ -43,12 +43,6 @@ run:
 	PYTHONPATH=. ${PYTHON} ${EXAMPLES}/${PROGRAM} \
 	# ${ARGUMENTS}
 
-test:
-	CPU=1 PYTHONPATH=. ${PYTHON} ${EXAMPLES}/test.py
-
-tiny:
-	CPU=1 PYTHONPATH=. ${PYTHON} ${EXAMPLES}/tiny.py
-
 nvidia:
 	watch -n0.1 nvidia-smi
 

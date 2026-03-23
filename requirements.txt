@@ -1,3 +1,2 @@
 numpy
 polars
-git+https://github.com/tinygrad/tinygrad.git
