@@ -25,40 +25,26 @@ model = Network()
 
 X_train, Y_train, X_test, Y_test = load_dataset()
 
-steps = 100
+steps = 3000
 
 optimizer = SGD([model.l1.weight, model.l2.weight, model.l3.weight, model.l4.weight], 0.002)
-# optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias], 0.002)
-
-
-# def accuracy(true, prediction):
-#     true = np.argmax(true.to_numpy(), axis=-1)
-#     prediction = np.argmax(prediction.data, axis=-1)
-#     return (true == prediction).mean()
 
 
 def loss(y, p):
-    p = p[:, 0]
-    y = y[:, 0]
-    return -(y * p.log() + (1 - y) * (1 - p).log()).mean()
+    weighted_log = y * p.log()
+    per_sample_loss = weighted_log.SUM()
+    return -per_sample_loss.MEAN()
 
 
 for step in range(steps):
-    print(step)
-
     Y = Tensor(Y_train)
     P = model(Tensor(X_train))
 
-    # precision = accuracy(Y_train, P)
-    # print(f"{precision * 100}%")
-
     loss_val = loss(Y, P)
-    print(f"{loss_val.data=}")
-    # print(f"{P.data=}")
 
     optimizer.zero_grad()
-
     loss_val.backward()
-
     optimizer.step()
-    print(model.l1.weight)
+
+    if (step + 1) % 100 == 0:
+        print(f"Step {step + 1}: loss = {loss_val.data}")
