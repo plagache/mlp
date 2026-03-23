@@ -15,7 +15,6 @@ class Operations(IntEnum):
     SOFTMAX = auto()
     SIGMOID = auto()
     T = auto()
-    # EXAMPLE = auto()
 
 
 backward_operations = {
@@ -26,16 +25,17 @@ backward_operations = {
     Operations.DIV: lambda gradient, parents: (gradient / parents[1].data, (-parents[0].data * gradient / np.square(parents[1].data))),
     Operations.DOT: lambda gradient, parents: (gradient @ parents[1].data.T, parents[0].data.T @ gradient),
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent[0].data <= 0, 0, 1)),),
-    Operations.LOG: lambda gradient, parent: (gradient * (1 / parent[0].data),),
+    Operations.LOG: lambda gradient, parent: (gradient / parent[0].data,),
     Operations.EXP: lambda gradient, parent: (gradient * np.exp(parent[0].data),),
-    Operations.SOFTMAX: lambda gradient, parent: (parent[0].data * (gradient - (gradient * parent[0].data).sum(axis=-1, keepdims=True)),),
+    Operations.SOFTMAX: lambda gradient, parent: (
+        _softmax(parent[0].data) * (gradient - (gradient * _softmax(parent[0].data)).sum(axis=-1, keepdims=True)),
+    ),
     # np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data)) = 1 - σ(x)
     # Proof: e^(-x)/(1+e^(-x)) = (1+e^(-x) - 1)/(1+e^(-x)) = 1 - 1/(1+e^(-x)) = 1 - σ(x)
     # σ′(x) = σ(x) · (1 - σ(x))
     # or σ′(x) = gradient * σ(x) * (1 - σ(x))
     # Operations.SIGMOID: lambda gradient, parent: (gradient * (1 / (1 + np.exp(-parent[0].data))) * (np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data))),),
     Operations.T: lambda gradient, parent: (gradient.T,),
-    # Operations.EXAMPLE: lambda gradient, parent: (None,),
 }
 
 
@@ -43,6 +43,14 @@ def _ensure_tensor(x):
     if isinstance(x, Tensor):
         return x
     return Tensor(x)
+
+
+# we are recomputing the softmax because we need the result in the lambda backwards
+# this is highly inefficient
+# a real compute graph is able to store the result and optimize its usage
+def _softmax(x):
+    exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
+    return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
 
 class Tensor:
@@ -82,8 +90,8 @@ class Tensor:
         apply backward with backward_operations[ops] on each nodes
         """
 
-        # self.grad = np.array([1])
-        self.grad = np.ones_like(self.data)
+        if self.grad is None:
+            self.grad = np.ones_like(self.data)
 
         for element in reversed(self.topo_sort()):
             ops, *parents = element.context
@@ -164,7 +172,7 @@ class Tensor:
     def __matmul__(self, x):
         return self.DOT(x)
 
-    def mean(self):
+    def MEAN(self):
         N = self.data.size
         fraction = Tensor([1 / N])
         return self.SUM().MUL(fraction)
@@ -211,8 +219,7 @@ class Tensor:
         Input is a vector, of which we want to determine the highest probability
         Return a [P, 1 - P]
         """
-        exp_data = np.exp(self.data - np.max(self.data, axis=-1, keepdims=True))
-        result = Tensor(exp_data / np.sum(exp_data, axis=-1, keepdims=True))
+        result = Tensor(_softmax(self.data))
         result.context = (Operations.SOFTMAX, self)
         return result
 
