@@ -13,7 +13,6 @@ class Operations(IntEnum):
     LOG = auto()
     EXP = auto()
     SOFTMAX = auto()
-    SIGMOID = auto()
     T = auto()
 
 
@@ -27,14 +26,7 @@ backward_operations = {
     Operations.RELU: lambda gradient, parent: (gradient * (np.where(parent[0].data <= 0, 0, 1)),),
     Operations.LOG: lambda gradient, parent: (gradient / parent[0].data,),
     Operations.EXP: lambda gradient, parent: (gradient * np.exp(parent[0].data),),
-    Operations.SOFTMAX: lambda gradient, parent: (
-        _softmax(parent[0].data) * (gradient - (gradient * _softmax(parent[0].data)).sum(axis=-1, keepdims=True)),
-    ),
-    # np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data)) = 1 - σ(x)
-    # Proof: e^(-x)/(1+e^(-x)) = (1+e^(-x) - 1)/(1+e^(-x)) = 1 - 1/(1+e^(-x)) = 1 - σ(x)
-    # σ′(x) = σ(x) · (1 - σ(x))
-    # or σ′(x) = gradient * σ(x) * (1 - σ(x))
-    # Operations.SIGMOID: lambda gradient, parent: (gradient * (1 / (1 + np.exp(-parent[0].data))) * (np.exp(-parent[0].data) / (1 + np.exp(-parent[0].data))),),
+    Operations.SOFTMAX: lambda gradient, parent: (_softmax(parent[0].data) * (gradient - (gradient * _softmax(parent[0].data)).sum(axis=-1, keepdims=True)),),
     Operations.T: lambda gradient, parent: (gradient.T,),
 }
 
@@ -221,14 +213,6 @@ class Tensor:
         """
         result = Tensor(_softmax(self.data))
         result.context = (Operations.SOFTMAX, self)
-        return result
-
-    def sigmoid(self):
-        return self.SIGMOID()
-
-    def SIGMOID(self):
-        result = Tensor(1 / (1 + np.exp(-self.data)))
-        result.context = (Operations.SIGMOID, self)
         return result
 
     # Need to remove Transpose and perform it before creating the Tensor
