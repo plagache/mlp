@@ -20,6 +20,3 @@ class SGD():
     def zero_grad(self):
         for param in self.params:
             param.grad = None
-            # print("zero grad: ", param)
-            # print("param.grad:", param.grad)
-        return # a model that has None as gradient       return               # print(param.grad)
