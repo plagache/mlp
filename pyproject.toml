@@ -1,3 +1,13 @@
+[project]
+name = "dlf"
+version = "0.1.0"
+description = "deep learning framework"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "polars",
+]
+
 [tool.ruff]
 line-length = 250
 
