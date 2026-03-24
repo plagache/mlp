@@ -25,9 +25,9 @@ model = Network()
 
 X_train, Y_train, X_test, Y_test = load_dataset()
 
-steps = 3000
+steps = 1000
 
-optimizer = SGD([model.l1.weight, model.l2.weight, model.l3.weight, model.l4.weight], 0.002)
+optimizer = SGD([model.l1.weight, model.l2.weight, model.l3.weight, model.l4.weight], 0.00002)
 
 
 def loss(y, p):
@@ -46,6 +46,7 @@ for step in range(steps):
     loss_val.backward()
     optimizer.step()
 
-    if (step + 1) % 1 == 0:
+    if (step + 1) % 10 == 0:
         train_accuracy = compute_accuracy(Y.data, P.data)
-        print(f"Step {step + 1}: loss = {loss_val.data}, train_acc = {train_accuracy}%")
+        validation_accuracy = compute_accuracy(Y_test, model(Tensor(X_test)).data)
+        print(f"Step {step + 1}: loss = {loss_val.data}, train_acc = {train_accuracy:2f}%, validation_acc = {validation_accuracy:2f}%")
