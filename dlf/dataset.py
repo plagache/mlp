@@ -1,4 +1,11 @@
 import polars as pl
+import numpy as np
+
+
+def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
+    predictions_classes = np.argmax(predictions, axis=1)
+    targets_classes = np.argmax(targets, axis=1)
+    return np.mean(predictions_classes == targets_classes) * 100
 
 
 def load_dataset():

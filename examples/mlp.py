@@ -2,7 +2,7 @@ import numpy as np
 import random
 from dlf.tensor import Tensor
 from dlf.optimizer import SGD
-from dlf.dataset import load_dataset
+from dlf.dataset import load_dataset, compute_accuracy
 from dlf.nn import Linear
 
 
@@ -46,5 +46,6 @@ for step in range(steps):
     loss_val.backward()
     optimizer.step()
 
-    if (step + 1) % 100 == 0:
-        print(f"Step {step + 1}: loss = {loss_val.data}")
+    if (step + 1) % 1 == 0:
+        train_accuracy = compute_accuracy(Y.data, P.data)
+        print(f"Step {step + 1}: loss = {loss_val.data}, train_acc = {train_accuracy}%")
