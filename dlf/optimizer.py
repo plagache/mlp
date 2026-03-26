@@ -15,6 +15,8 @@ class SGD():
     def step(self):
         for param in self.params:
             if param.grad is not None:
+                if param.grad.shape != param.data.shape:
+                    param.grad = param.grad.sum(axis=0)
                 param.data -= self.lr * param.grad
  
     def zero_grad(self):
