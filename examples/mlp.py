@@ -1,7 +1,7 @@
 import numpy as np
 import random
 from dlf.tensor import Tensor
-from dlf.optimizer import SGD
+from dlf.optimizer import GD, get_parameters
 from dlf.dataset import load_dataset, compute_accuracy
 from dlf.nn import Linear
 
@@ -22,12 +22,13 @@ class Network:
 
 
 model = Network()
+get_parameters(model)
 
 X_train, Y_train, X_test, Y_test = load_dataset()
 
 steps = 1000
 
-optimizer = SGD([model.l1.weight, model.l1.bias, model.l2.weight, model.l2.bias, model.l3.weight, model.l3.bias, model.l4.weight, model.l4.bias], 0.00002)
+optimizer = GD(get_parameters(model), 0.00002)
 
 
 def loss(y, p):
