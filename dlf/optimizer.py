@@ -3,12 +3,11 @@ from .tensor import Tensor
 
 def get_parameters(model):
     parameters = []
-    for attr in vars(model).values():
-        if isinstance(attr, Tensor):
-            parameters.append(attr)
-            print(attr)
-        elif hasattr(attr, "__dict__"):
-            parameters.extend(get_parameters(attr))
+    for object in vars(model).values():
+        if isinstance(object, Tensor):
+            parameters.append(object)
+        elif hasattr(object, "__dict__"):
+            parameters.extend(get_parameters(object))
     return parameters
 
 

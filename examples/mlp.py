@@ -4,6 +4,9 @@ from dlf.tensor import Tensor
 from dlf.optimizer import GD, get_parameters
 from dlf.dataset import load_dataset, compute_accuracy
 from dlf.nn import Linear
+from dlf.plot import plot_series
+
+X_train, Y_train, X_test, Y_test = load_dataset()
 
 
 class Network:
@@ -22,11 +25,6 @@ class Network:
 
 
 model = Network()
-get_parameters(model)
-
-X_train, Y_train, X_test, Y_test = load_dataset()
-
-steps = 1000
 
 optimizer = GD(get_parameters(model), 0.00002)
 
@@ -37,6 +35,9 @@ def loss(y, p):
     return -per_sample_loss.MEAN()
 
 
+train_accuracies = []
+validation_accuracies = []
+steps = 1000
 for step in range(steps):
     Y = Tensor(Y_train)
     P = model(Tensor(X_train))
@@ -51,3 +52,7 @@ for step in range(steps):
         train_accuracy = compute_accuracy(Y.data, P.data)
         validation_accuracy = compute_accuracy(Y_test, model(Tensor(X_test)).data)
         print(f"Step {step + 1}: loss = {loss_val.data}, train_acc = {train_accuracy:2f}%, validation_acc = {validation_accuracy:2f}%")
+        train_accuracies.append(train_accuracy)
+        validation_accuracies.append(validation_accuracy)
+
+plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Loss")
