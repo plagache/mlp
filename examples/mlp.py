@@ -55,4 +55,4 @@ for step in range(steps):
         train_accuracies.append(train_accuracy)
         validation_accuracies.append(validation_accuracy)
 
-plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Loss")
+plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
