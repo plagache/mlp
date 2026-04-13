@@ -9,7 +9,6 @@ def plot_series(series, plot_name):
         plt.plot(values, label=name)
     plt.xlabel("Steps")
     plt.ylabel(plot_name)
-    plt.ylim(0, 100)
     plt.title(plot_name + " plot")
     plt.legend()
     plt.grid(True)
