@@ -64,7 +64,7 @@ for step in range(steps):
         train_accuracies.append(train_accuracy)
         validation_accuracies.append(validation_accuracy)
 
-        print(f"Step {step + 1}: loss = {train_loss.data}, log_loss = {validation_loss.data}, train_acc = {train_accuracy:2f}%, validation_acc = {validation_accuracy:2f}%")
+        print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
 
 plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
 plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")

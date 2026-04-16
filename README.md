@@ -17,9 +17,9 @@ uv run python examples/inference_mlp.py
 
 ## ToDo
 
-- split train and prediction program
-    - seems to have a safetensor.numpy module
+- [x] split train and prediction program
 - [x] refacto loss function
+- [ ] implement SGD
 
 my intuition is that giving 80% of the dataset in one pass of our model will make it learn so fast.
 it does not need to reajust much its weight.
