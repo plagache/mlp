@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from safetensors.numpy import save_file
 from dlf.tensor import Tensor
 from dlf.optimizer import GD, get_parameters
 from dlf.dataset import load_dataset, compute_accuracy
@@ -67,3 +68,17 @@ for step in range(steps):
 
 plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
 plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")
+
+save_file(
+    {
+        "l1.weight": model.l1.weight.data,
+        "l1.bias": model.l1.bias.data,
+        "l2.weight": model.l2.weight.data,
+        "l2.bias": model.l2.bias.data,
+        "l3.weight": model.l3.weight.data,
+        "l3.bias": model.l3.bias.data,
+        "l4.weight": model.l4.weight.data,
+        "l4.bias": model.l4.bias.data,
+    },
+    "mlp.safetensors",
+)
