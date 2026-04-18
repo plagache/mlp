@@ -39,32 +39,39 @@ train_losses = []
 train_accuracies = []
 validation_accuracies = []
 
-steps = 2000
-for step in range(steps):
-    Y = Tensor(Y_train)
-    P = model(Tensor(X_train))
+# steps = 2000
+# for step in range(steps):
+epochs = 70
+batch_size = 100
+for epoch in range(epochs):
+    for e in range(0, len(X_train), batch_size):
+        X_batch = X_train[e:e+batch_size]
+        Y_batch = Y_train[e:e+batch_size]
+        Y = Tensor(Y_batch)
+        P = model(Tensor(X_batch))
 
-    train_loss = log_loss(Y, P)
+        train_loss = log_loss(Y, P)
 
-    optimizer.zero_grad()
-    train_loss.backward()
-    optimizer.step()
+        optimizer.zero_grad()
+        train_loss.backward()
+        optimizer.step()
 
-    if (step + 1) % 10 == 0:
-        Y_T = Tensor(Y_test)
-        P_T = model(Tensor(X_test))
+        # if (step + 1) % 10 == 0:
+    Y_T = Tensor(Y_test)
+    P_T = model(Tensor(X_test))
 
-        validation_loss = log_loss(Y_T, P_T)
+    validation_loss = log_loss(Y_T, P_T)
 
-        validation_losses.append(float(validation_loss.data[0]))
-        train_losses.append(float(train_loss.data[0]))
+    validation_losses.append(float(validation_loss.data[0]))
+    train_losses.append(float(train_loss.data[0]))
 
-        train_accuracy = compute_accuracy(Y.data, P.data)
-        validation_accuracy = compute_accuracy(Y_T.data, P_T.data)
-        train_accuracies.append(train_accuracy)
-        validation_accuracies.append(validation_accuracy)
+    train_accuracy = compute_accuracy(Y.data, P.data)
+    validation_accuracy = compute_accuracy(Y_T.data, P_T.data)
+    train_accuracies.append(train_accuracy)
+    validation_accuracies.append(validation_accuracy)
 
-        print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
+    print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
+            # print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
 
 plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
 plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")
