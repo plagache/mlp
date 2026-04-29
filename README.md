@@ -15,6 +15,8 @@ uv run python examples/train_mlp.py
 uv run python examples/inference_mlp.py
 ```
 
+there are other [commands](/docs/commands.md) you can use, to display the directory and view images in your browser for examples
+
 ## ToDo
 
 - [x] split train and prediction program
