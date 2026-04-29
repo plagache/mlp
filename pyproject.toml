@@ -10,6 +10,17 @@ dependencies = [
     "safetensors",
 ]
 
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["dlf"]
+
+[tool.setuptools.package-data]
+dlf = ["README.md"]
+
 [tool.ruff]
 line-length = 250
 
