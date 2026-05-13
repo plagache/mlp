@@ -1,6 +1,6 @@
 # mlp
 
-Introduction to artificial neural networks, with the implementation of a multilayer perceptron.
+Introduction to neural networks, with the implementation of a multilayer perceptron.
 If you want to learn more about the way [deep learning framework](dlf/README.md) work.
 
 ## Install
@@ -23,7 +23,7 @@ uv run python examples/inference_mlp.py
 ```
 Load weight from training and perform inference on unseen data.
 
-there are other [commands](docs/commands.md:3) you can use, to display the directory and view images in your browser for examples.
+there are other [commands](docs/commands.md#L3) you can use, to display the directory and view images in your browser for examples.
 
 ## ToDo
 
