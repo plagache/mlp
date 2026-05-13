@@ -8,14 +8,20 @@ Introduction to artificial neural networks, with the implementation of a multila
 uv venv --python 3.12 .venv && uv pip install -e .
 ```
 
-## Run
+## Training
 
 ```bash
 uv run python examples/train_mlp.py
+```
+this will save plot about the training data.
+
+## Inference
+
+```bash
 uv run python examples/inference_mlp.py
 ```
 
-there are other [commands](/docs/commands.md) you can use, to display the directory and view images in your browser for examples
+there are other [commands](/docs/commands.md) you can use, to display the directory and view images in your browser for examples.
 
 ## ToDo
 
