@@ -1,5 +1,7 @@
-import polars as pl
+import os
+
 import numpy as np
+import polars as pl
 
 
 def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
@@ -9,6 +11,7 @@ def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
 
 
 def load_dataset():
+    assert os.path.exists("data.csv"), "data.csv not found"
     data = pl.read_csv("data.csv", has_header=False)
 
     data = data.with_columns(pl.col("column_2").replace({"M": 1, "B": 0}).cast(pl.Float64).alias("Malign"))

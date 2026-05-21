@@ -1,28 +1,16 @@
-import numpy as np
 import random
+
+import numpy as np
 from safetensors.numpy import save_file
-from dlf.tensor import Tensor
-from dlf.optimizer import GD, get_parameters
-from dlf.dataset import load_dataset, compute_accuracy
+
+from dlf.dataset import compute_accuracy, load_dataset
+from dlf.model_mlp import Network
 from dlf.nn import Linear
+from dlf.optimizer import GD, get_parameters
 from dlf.plot import plot_series
+from dlf.tensor import Tensor
 
 X_train, Y_train, X_test, Y_test = load_dataset()
-
-
-class Network:
-    def __init__(self):
-        self.l1 = Linear(30, 10)
-        self.l2 = Linear(10, 10)
-        self.l3 = Linear(10, 10)
-        self.l4 = Linear(10, 2)
-
-    def __call__(self, x: Tensor):
-        x = self.l1(x).RELU()
-        x = self.l2(x).RELU()
-        x = self.l3(x).RELU()
-        x = self.l4(x).SOFTMAX()
-        return x
 
 
 model = Network()
@@ -41,12 +29,12 @@ validation_accuracies = []
 
 # steps = 2000
 # for step in range(steps):
-epochs = 70
+epochs = 200
 batch_size = 100
 for epoch in range(epochs):
     for e in range(0, len(X_train), batch_size):
-        X_batch = X_train[e:e+batch_size]
-        Y_batch = Y_train[e:e+batch_size]
+        X_batch = X_train[e : e + batch_size]
+        Y_batch = Y_train[e : e + batch_size]
         Y = Tensor(Y_batch)
         P = model(Tensor(X_batch))
 
@@ -71,7 +59,7 @@ for epoch in range(epochs):
     validation_accuracies.append(validation_accuracy)
 
     print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
-            # print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
+    # print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
 
 plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
 plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")

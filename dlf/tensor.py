@@ -1,5 +1,6 @@
+from enum import IntEnum, auto
+
 import numpy as np
-from enum import auto, IntEnum
 
 
 class Operations(IntEnum):
