@@ -15,7 +15,7 @@ X_train, Y_train, X_test, Y_test = load_dataset()
 
 model = Network()
 
-optimizer = GD(get_parameters(model), 0.002)
+optimizer = GD(get_parameters(model), 0.002, weight_decay=1e-6)
 
 
 def log_loss(y, p):
@@ -29,8 +29,8 @@ validation_accuracies = []
 
 # steps = 2000
 # for step in range(steps):
-epochs = 200
-batch_size = 100
+epochs = 100
+batch_size = 32
 for epoch in range(epochs):
     for e in range(0, len(X_train), batch_size):
         X_batch = X_train[e : e + batch_size]
