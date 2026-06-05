@@ -31,6 +31,10 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 
 - [x] split train and prediction program
 - [x] refacto loss function
+- [x] add BCE to inference
+- [x] add split dataset program #output data_train.csv and data_valid.csv
+- [ ] refacto load dataset with new path
+- [ ] panda query to detect null or 0 value
 - [ ] implement SGD
 
 my intuition is that giving 80% of the dataset in one pass of our model will make it learn so fast.

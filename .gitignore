@@ -52,3 +52,6 @@ venv.bak/
 
 # model
 *.safetensors
+
+# created_data
+data_*
