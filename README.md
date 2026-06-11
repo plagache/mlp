@@ -34,7 +34,8 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 - [x] add BCE to inference
 - [x] add split dataset program #output data_train.csv and data_valid.csv
 - [ ] refacto load dataset with new path
-- [ ] panda query to detect null or 0 value
+- [ ] polars query to detect null or 0 value
+- [ ] make some link about the data to the actual images of a breast cancer
 - [ ] implement SGD
 
 my intuition is that giving 80% of the dataset in one pass of our model will make it learn so fast.
