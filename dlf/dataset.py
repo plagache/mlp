@@ -23,7 +23,7 @@ def create_data(percent=0.8, shuffle=True, seed=None):
     # cannot do the function
     assert os.path.exists("data.csv"), "data.csv not found"
     data = pl.read_csv("data.csv", has_header=False)
-    data.sample(fraction=percent, shuffle=shuffle, seed=seed)
+    data = data.sample(fraction=1.0, shuffle=shuffle, seed=seed)
     print(f"data being split:\n{data}")
 
     data_len = len(data)
@@ -38,7 +38,7 @@ def create_data(percent=0.8, shuffle=True, seed=None):
 
 
 def load_dataset():
-    if not os.path.exists("data_train.csv") or os.path.exists("data_valid.csv"):
+    if not (os.path.exists("data_train.csv") and os.path.exists("data_valid.csv")):
         create_data()
     data_train = pl.read_csv("data_train.csv", has_header=False)
     data_valid = pl.read_csv("data_valid.csv", has_header=False)
