@@ -48,8 +48,8 @@ def _softmax(x):
 
 class Tensor:
     """
-    2 * 3 = 6 <=> context: ('*', 2, 3)
-    4 + 5 = 9 <=> context: ('+', 4, 5)
+    4 + 5 = 9 <=> context: (`+`, 4, 5)
+    2 * 3 = 6 <=> context: (`*`, 2, 3)
     """
 
     def __init__(self, data):
