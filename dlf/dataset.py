@@ -24,6 +24,12 @@ def create_data(percent=0.8, shuffle=True, seed=None):
     assert os.path.exists("data.csv"), "data.csv not found"
     data = pl.read_csv("data.csv", has_header=False)
     data = data.sample(fraction=1.0, shuffle=shuffle, seed=seed)
+
+    data_with_zero = data.filter(pl.any_horizontal(pl.selectors.numeric().eq(0)))
+    print(f"Try columns with zero:\n{data_with_zero}")
+
+    data = data.filter(~pl.any_horizontal(pl.selectors.numeric().eq(0)))
+
     print(f"data being split:\n{data}")
 
     data_len = len(data)
