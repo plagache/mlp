@@ -16,7 +16,11 @@ def log_loss(y, p):
 
 
 if __name__ == "__main__":
+    output_file = "mlp.safetensors"
+
     X_train, Y_train, X_test, Y_test = load_dataset()
+    print(f"x_train shape: {X_train.shape}")
+    print(f"x_valid shape: {X_test.shape}")
 
     model = Network()
 
@@ -59,7 +63,8 @@ if __name__ == "__main__":
         train_accuracies.append(train_accuracy)
         validation_accuracies.append(validation_accuracy)
 
-        print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
+        print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, Accuracy = {train_accuracy:.2f}%")
+        # print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
         # print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
 
     plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
@@ -76,5 +81,6 @@ if __name__ == "__main__":
             "l4.weight": model.l4.weight.data,
             "l4.bias": model.l4.bias.data,
         },
-        "mlp.safetensors",
+        output_file
     )
+    print(f"> saving model '{output_file}' to disk...")
