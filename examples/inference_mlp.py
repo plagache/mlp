@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from safetensors.numpy import load_file
 
@@ -8,13 +8,11 @@ from dlf.tensor import Tensor
 from train_mlp import log_loss
 
 if __name__ == "__main__":
-
     X_train, Y_train, X_test, Y_test = load_dataset()
-
 
     model = Network()
 
-    assert os.path.exists("mlp.safetensors"), "mlp.safetensors not found, run `uv run python examples/train_mlp.py` to generate it"
+    assert Path("mlp.safetensors").exists(), "mlp.safetensors not found, run `uv run python examples/train_mlp.py` to generate it"
     loaded = load_file("mlp.safetensors")
     model.l1.weight.data = loaded["l1.weight"]
     model.l1.bias.data = loaded["l1.bias"]

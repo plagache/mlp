@@ -1,5 +1,4 @@
-import os
-# import Path
+from pathlib import Path
 
 import numpy as np
 import polars as pl
@@ -11,17 +10,23 @@ def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
     return np.mean(predictions_classes == targets_classes) * 100
 
 
+def ensure_data_exist():
+    if not (Path("data_train.csv").exists() and Path("data_valid.csv").exists()):
+        create_data()
+    return
+
+
 def create_data(percent=0.8, shuffle=True, seed=None):
 
     # no need for the function
-    if os.path.exists("data_train.csv") and os.path.exists("data_valid.csv"):
+    if Path("data_train.csv").exists() and Path("data_valid.csv").exists():
         data_train = pl.read_csv("data_train.csv", has_header=False)
         data_valid = pl.read_csv("data_valid.csv", has_header=False)
         print(f"data already split")
         return
 
     # cannot do the function
-    assert os.path.exists("data.csv"), "data.csv not found"
+    assert Path("data.csv").exists(), "data.csv not found"
     data = pl.read_csv("data.csv", has_header=False)
     data = data.sample(fraction=1.0, shuffle=shuffle, seed=seed)
 
