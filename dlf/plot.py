@@ -15,4 +15,4 @@ def plot_series(series, plot_name):
     output_path = plot_name + "_plot.png"
     plt.savefig(output_path, dpi=150)
     plt.close()
-    print(f"Plot saved to {output_path}")
+    # print(f"Plot saved to {output_path}")
