@@ -2,13 +2,14 @@ from pathlib import Path
 
 from safetensors.numpy import load_file
 
-from dlf.dataset import compute_accuracy, load_dataset
+from dlf.dataset import compute_accuracy, load_dataset, create_data
 from dlf.model_mlp import Network
 from dlf.tensor import Tensor
 from train_mlp import log_loss
 
 if __name__ == "__main__":
-    X_train, Y_train, X_test, Y_test = load_dataset()
+    train_path, valid_path = create_data()
+    X_test, Y_test = load_dataset(valid_path)
 
     model = Network()
 

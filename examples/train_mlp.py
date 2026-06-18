@@ -1,9 +1,10 @@
 import random
+from pathlib import Path
 
 import numpy as np
 from safetensors.numpy import save_file
 
-from dlf.dataset import compute_accuracy, load_dataset
+from dlf.dataset import compute_accuracy, load_dataset, create_data
 from dlf.model_mlp import Network
 from dlf.nn import Linear
 from dlf.optimizer import GD, get_parameters
@@ -12,20 +13,20 @@ from dlf.tensor import Tensor
 
 
 def log_loss(y, p):
-    return -((y * (p).log() + (1 - y) * (1 - p).log()).MEAN())
+    return -((y * p.log() + (1 - y) * (1 - p).log()).MEAN())
 
 
 if __name__ == "__main__":
     output_file = "mlp.safetensors"
 
-    X_train, Y_train, X_test, Y_test = load_dataset()
-    print(f"x_train shape: {X_train.shape}")
-    print(f"x_valid shape: {X_test.shape}")
+    train_path, valid_path = create_data()
+    X_train, Y_train = load_dataset(train_path)
+    X_test, Y_test = load_dataset(valid_path)
 
     model = Network()
 
     # optimizer = GD(get_parameters(model), 0.002, weight_decay=0)
-    optimizer = GD(get_parameters(model), 0.002, weight_decay=1e-4)
+    optimizer = GD(get_parameters(model), 0.001, weight_decay=1e-7)
 
     validation_losses = []
     train_losses = []
@@ -81,6 +82,6 @@ if __name__ == "__main__":
             "l4.weight": model.l4.weight.data,
             "l4.bias": model.l4.bias.data,
         },
-        output_file
+        output_file,
     )
     print(f"> saving model '{output_file}' to disk...")

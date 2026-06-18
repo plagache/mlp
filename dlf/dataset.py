@@ -4,78 +4,92 @@ import numpy as np
 import polars as pl
 
 
+def decoder(inputs):
+    """
+    takes a [P, 1-P]
+    and return the indices of the highest
+    """
+    output = np.argmax(inputs, axis=1)
+    return output
+
+def encoder(dataframe):
+    dataframe = dataframe.with_columns(pl.col("column_2").replace({"M": 1, "B": 0}).cast(pl.Float64).alias("Malign"))
+    dataframe = dataframe.with_columns(pl.col("column_2").replace({"M": 0, "B": 1}).cast(pl.Float64).alias("Benign"))
+    Y = dataframe.select(["Malign", "Benign"]).to_numpy()
+    return Y
+
 def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
-    predictions_classes = np.argmax(predictions, axis=1)
-    targets_classes = np.argmax(targets, axis=1)
+    predictions_classes = decoder(predictions)
+    targets_classes = decoder(targets)
     return np.mean(predictions_classes == targets_classes) * 100
-
-
-def ensure_data_exist():
-    if not (Path("data_train.csv").exists() and Path("data_valid.csv").exists()):
-        create_data()
-    return
 
 
 def create_data(percent=0.8, shuffle=True, seed=None):
 
+    # we could add data_path has a parameters but what about already created train and valid then
+    data_path = "data.csv"
+    train_path = "data_train.csv"
+    valid_path = "data_valid.csv"
     # no need for the function
-    if Path("data_train.csv").exists() and Path("data_valid.csv").exists():
-        data_train = pl.read_csv("data_train.csv", has_header=False)
-        data_valid = pl.read_csv("data_valid.csv", has_header=False)
-        print(f"data already split")
-        return
+    if Path(train_path).exists() and Path(valid_path).exists():
+        print(f"data already split {train_path}, {valid_path}")
+        return train_path, valid_path
 
     # cannot do the function
     assert Path("data.csv").exists(), "data.csv not found"
+
+    # Load and shuffle data
     data = pl.read_csv("data.csv", has_header=False)
     data = data.sample(fraction=1.0, shuffle=shuffle, seed=seed)
 
+    # Detect bad data
     data_with_zero = data.filter(pl.any_horizontal(pl.selectors.numeric().eq(0)))
     print(f"Try columns with zero:\n{data_with_zero}")
 
+    # Cleanup
     data = data.filter(~pl.any_horizontal(pl.selectors.numeric().eq(0)))
 
+    # print before split
     print(f"data being split:\n{data}")
 
+    # Calcul du separateur
     data_len = len(data)
-
     frac = int(percent * data_len)
 
+    # Split
     train = data[:frac]
     valid = data[frac:]
-    train.write_csv("data_train.csv", include_header=False)
-    valid.write_csv("data_valid.csv", include_header=False)
-    return
+
+    # Write
+    train.write_csv(train_path, include_header=False)
+    valid.write_csv(valid_path, include_header=False)
+
+    return train_path, valid_path
 
 
-def load_dataset():
-    if not (os.path.exists("data_train.csv") and os.path.exists("data_valid.csv")):
-        create_data()
-    data_train = pl.read_csv("data_train.csv", has_header=False)
-    data_valid = pl.read_csv("data_valid.csv", has_header=False)
-    # print(data_train)
-    # print(data_valid)
+def load_dataset(file_path):
+    """
+    do we store the normalisation technique ? yes in a safetensors
+    """
+    dataframe = pl.read_csv(file_path, has_header=False)
+    # print(dataframe)
 
-    data_train = data_train.with_columns(pl.col("column_2").replace({"M": 1, "B": 0}).cast(pl.Float64).alias("Malign"))
-    data_train = data_train.with_columns(pl.col("column_2").replace({"M": 0, "B": 1}).cast(pl.Float64).alias("Benign"))
-    data_valid = data_valid.with_columns(pl.col("column_2").replace({"M": 1, "B": 0}).cast(pl.Float64).alias("Malign"))
-    data_valid = data_valid.with_columns(pl.col("column_2").replace({"M": 0, "B": 1}).cast(pl.Float64).alias("Benign"))
-
-    Y_train = data_train.select(["Malign", "Benign"]).to_numpy()
-    X_train = data_train.select(data_train.columns[2:32]).to_numpy()
-    Y_test = data_valid.select(["Malign", "Benign"]).to_numpy()
-    X_test = data_valid.select(data_valid.columns[2:32]).to_numpy()
+    # so the Malign is left and the Benign droite
+    Y = encoder(dataframe)
+    X = dataframe.select(dataframe.columns[2:32]).to_numpy()
 
     # axis=0 so we have a mean for each features (30,) and not THE MEAN and a reduce axis ()
-    mean_train = X_train.mean(axis=0)
-    std_train = X_train.std(axis=0)
+    mean = X.mean(axis=0)
+    std = X.std(axis=0)
 
-    X_train_norm = (X_train - mean_train) / std_train
-    X_test_norm = (X_test - mean_train) / std_train
+    X_norm = (X - mean) / std
 
-    return X_train_norm, Y_train, X_test_norm, Y_test
+    print(f"X {file_path} shape: {X_norm.shape}")
+
+    return X_norm, Y
 
 
 if __name__ == "__main__":
-    X_train, Y_train, X_test, Y_test = load_dataset()
-    print(f"{X_train.shape=}\n{Y_train.shape=}\n{X_test.shape=}\n{Y_test.shape=}")
+    train_path, valid_path = create_data()
+    X_train, Y_train = load_dataset(train_path)
+    X_test, Y_test = load_dataset(valid_path)
