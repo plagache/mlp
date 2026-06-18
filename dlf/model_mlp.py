@@ -4,9 +4,9 @@ from dlf.nn import Linear
 
 class Network:
     def __init__(self):
-        self.l1 = Linear(30, 10)
-        self.l2 = Linear(10, 10)
-        self.l3 = Linear(10, 10)
+        self.l1 = Linear(30, 30)
+        self.l2 = Linear(30, 30)
+        self.l3 = Linear(30, 10)
         self.l4 = Linear(10, 2)
 
     def __call__(self, x: Tensor):
