@@ -12,11 +12,10 @@ def decoder(inputs):
     output = np.argmax(inputs, axis=1)
     return output
 
-def encoder(dataframe):
-    dataframe = dataframe.with_columns(pl.col("column_2").replace({"M": 1, "B": 0}).cast(pl.Float64).alias("Malign"))
-    dataframe = dataframe.with_columns(pl.col("column_2").replace({"M": 0, "B": 1}).cast(pl.Float64).alias("Benign"))
-    Y = dataframe.select(["Malign", "Benign"]).to_numpy()
-    return Y
+def encoder(column):
+    malign = column.replace({"M": 1, "B": 0}).cast(pl.Float64)
+    benign = column.replace({"M": 0, "B": 1}).cast(pl.Float64)
+    return np.stack([malign.to_numpy(), benign.to_numpy()], axis=1)
 
 def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
     predictions_classes = decoder(predictions)
@@ -75,7 +74,7 @@ def load_dataset(file_path):
     # print(dataframe)
 
     # so the Malign is left and the Benign droite
-    Y = encoder(dataframe)
+    Y = encoder(dataframe["column_2"])
     X = dataframe.select(dataframe.columns[2:32]).to_numpy()
 
     # axis=0 so we have a mean for each features (30,) and not THE MEAN and a reduce axis ()
