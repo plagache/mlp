@@ -32,16 +32,17 @@ backward_operations = {
 }
 
 
-def _ensure_tensor(x):
-    if isinstance(x, Tensor):
-        return x
-    return Tensor(x)
-
-
 # we are recomputing the softmax because we need the result in the lambda backwards
 # this is highly inefficient
-# a real compute graph is able to store the result and optimize its usage
+# a real deep learning framework is able to store the result and optimize its usage
+# also separating Tensor operations from mathematical operations
 def _softmax(x):
+    """
+    This function turns `raw guesses` into a clear probability distribution.
+
+    1. Every number becomes positive.
+    2. All the numbers together now add up to exactly 1.0.
+    """
     exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
     return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
@@ -60,6 +61,11 @@ class Tensor:
 
         self.grad: np.ndarray | None = None
         self.context: tuple | None = None
+
+    # a classmethod takes the class has its first input instead self
+    @classmethod
+    def _ensure_tensor(cls, x):
+        return x if isinstance(x, cls) else cls(x)
 
     @staticmethod
     def ones_like(tensor):
@@ -83,10 +89,6 @@ class Tensor:
         return ret
 
     def backward(self):
-        """
-        Input: a dict of nodes (result from topo_sort)
-        apply backward with backward_operations[ops] on each nodes
-        """
 
         if self.grad is None:
             self.grad = np.ones_like(self.data)
@@ -116,7 +118,7 @@ class Tensor:
         return self.ADD(x)
 
     def ADD(self, x):
-        x = _ensure_tensor(x)
+        x = self._ensure_tensor(x)
         result = Tensor(self.data + x.data)
         result.context = (Operations.ADD, self, x)
         return result
@@ -128,13 +130,13 @@ class Tensor:
         return self.SUB(x)
 
     def SUB(self, x):
-        x = _ensure_tensor(x)
+        x = self._ensure_tensor(x)
         result = Tensor(self.data - x.data)
         result.context = (Operations.SUB, self, x)
         return result
 
     def __rsub__(self, x):
-        x = _ensure_tensor(x)
+        x = self._ensure_tensor(x)
         return x.SUB(self)
 
     def SUM(self):
@@ -146,7 +148,7 @@ class Tensor:
         return self.MUL(x)
 
     def MUL(self, x):
-        x = _ensure_tensor(x)
+        x = self._ensure_tensor(x)
         result = Tensor(self.data * x.data)
         result.context = (Operations.MUL, self, x)
         return result
@@ -158,13 +160,13 @@ class Tensor:
         return self.DIV(x)
 
     def DIV(self, x):
-        x = _ensure_tensor(x)
+        x = self._ensure_tensor(x)
         result = Tensor(self.data / x.data)
         result.context = (Operations.DIV, self, x)
         return result
 
     def __rtruediv__(self, x):
-        x = _ensure_tensor(x)
+        x = self._ensure_tensor(x)
         return x.DIV(self)
 
     def __matmul__(self, x):
@@ -189,6 +191,11 @@ class Tensor:
         return result
 
     def RELU(self):
+        """
+        Activation function that silences negative values and keeps the positive ones.
+        Mimicking a neuron, activating (firing) or not.
+        Real neurons have a precise voltage, indicating precise values.
+        """
         result = Tensor(np.where(self.data < 0, 0, self.data))
         result.context = (Operations.RELU, self)
         return result
@@ -201,21 +208,15 @@ class Tensor:
         result.context = (Operations.LOG, self)
         return result
 
-    def exp(self):
-        return self.EXP()
-
     def EXP(self):
         result = Tensor(np.exp(self.data))
         result.context = (Operations.EXP, self)
         return result
 
-    def softMax(self):
-        return self.SOFTMAX()
-
     def SOFTMAX(self):
         """
-        Input is a vector, of which we want to determine the highest probability
-        Return a [P, 1 - P]
+        Computes the softmax activation function along the last axis.
+        Returns a Tensor of the same shape as the input.
         """
         result = Tensor(_softmax(self.data))
         result.context = (Operations.SOFTMAX, self)
@@ -225,6 +226,7 @@ class Tensor:
     # Actually, it can be done on a numpy array that will feed to Tensor once the Transpose is done
     #
     # Or we would have to implement a Transpose Backward, that return the Transpose of the gradient
+    # With @property we can then use y = x.T and it will call this method
     @property
     def T(self):
         result = type(self)(self.data.T)
