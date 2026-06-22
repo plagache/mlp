@@ -1,12 +1,7 @@
-import random
-from pathlib import Path
-
-import numpy as np
+from dataset import compute_accuracy, create_data, load_dataset
 from safetensors.numpy import save_file
 
-from dlf.dataset import compute_accuracy, load_dataset, create_data
 from dlf.model_mlp import Network
-from dlf.nn import Linear
 from dlf.optimizer import GD, get_parameters
 from dlf.plot import plot_series
 from dlf.tensor import Tensor
@@ -21,7 +16,9 @@ if __name__ == "__main__":
 
     train_path, valid_path = create_data()
     X_train, Y_train = load_dataset(train_path)
+    print(f"X {train_path} shape: {X_train.shape}")
     X_test, Y_test = load_dataset(valid_path)
+    print(f"X {valid_path} shape: {X_test.shape}")
 
     model = Network()
 

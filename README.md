@@ -29,6 +29,12 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 
 ## ToDo
 
+- [ ] shift to model in a json
+- [ ] add the __call__ function
+- [ ] can load weight differently in Inference ?
+- [ ] think about the dataset split in training and inference
+- [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
+- [ ] implement SGD
 - [x] split train and prediction program
 - [x] refacto loss function
 - [x] add BCE to inference
@@ -37,10 +43,7 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 - [x] refacto load dataset with new path
 - [x] refacto with pathlib
 - [x] refacto load_dataset with encoder
-- [ ] store the normalisation technique in a safetensors
-- [ ] think about the dataset split in training and inference
-- [ ] make some link about the data to the actual images of a breast cancer
-- [ ] implement SGD
+- [x] store the normalisation technique in a safetensors
 
 my intuition is that giving 80% of the dataset in one pass of our model will make it learn so fast.
 it does not need to reajust much its weight.

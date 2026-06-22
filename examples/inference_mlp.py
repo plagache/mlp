@@ -1,11 +1,11 @@
 from pathlib import Path
 
 from safetensors.numpy import load_file
+from train_mlp import log_loss
 
-from dlf.dataset import compute_accuracy, load_dataset, create_data
+from dataset import compute_accuracy, create_data, load_dataset
 from dlf.model_mlp import Network
 from dlf.tensor import Tensor
-from train_mlp import log_loss
 
 if __name__ == "__main__":
     train_path, valid_path = create_data()
