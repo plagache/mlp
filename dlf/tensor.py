@@ -67,9 +67,9 @@ class Tensor:
     def _ensure_tensor(cls, x):
         return x if isinstance(x, cls) else cls(x)
 
-    @staticmethod
-    def ones_like(tensor):
-        return Tensor(np.ones_like(tensor.data))
+    @classmethod
+    def ones_like(cls, tensor):
+        return cls(np.ones_like(tensor.data))
 
     def topo_sort(self):
         ret = dict()
