@@ -1,7 +1,7 @@
 from dataset import compute_accuracy, create_data, load_dataset
+from model_mlp import Network
 from safetensors.numpy import save_file
 
-from dlf.model_mlp import Network
 from dlf.optimizer import GD, get_parameters
 from dlf.plot import plot_series
 from dlf.tensor import Tensor
@@ -9,6 +9,18 @@ from dlf.tensor import Tensor
 
 def log_loss(y, p):
     return -((y * p.log() + (1 - y) * (1 - p).log()).MEAN())
+
+
+def save_model(model: Network, output_file: str):
+    state_dict = {}
+
+    for i, layer in enumerate(model.layers):
+        print(f"{i}, {layer}")
+        state_dict[f"l{i}.weight"] = layer.weight.data
+        state_dict[f"l{i}.bias"] = layer.bias.data
+
+    save_file(state_dict, output_file)
+    print(f"> saving modular model '{output_file}' to disk...")
 
 
 if __name__ == "__main__":
@@ -20,10 +32,18 @@ if __name__ == "__main__":
     X_test, Y_test = load_dataset(valid_path)
     print(f"X {valid_path} shape: {X_test.shape}")
 
-    model = Network()
+    layer_sizes = [30, 30, 10, 2]
+    model = Network(layer_sizes, X_train.shape[1])
+    print(X_train.shape[0])
+    print(X_train.shape[1])
+
+    params = get_parameters(model)
+    print(f"Optimizer is tracking {len(params)} parameters from {layer_sizes=}")
+    # print(f"{params=}")
 
     # optimizer = GD(get_parameters(model), 0.002, weight_decay=0)
     optimizer = GD(get_parameters(model), 0.001, weight_decay=1e-7)
+    # print(f"{params=}")
 
     validation_losses = []
     train_losses = []
@@ -68,17 +88,4 @@ if __name__ == "__main__":
     plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
     plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")
 
-    save_file(
-        {
-            "l1.weight": model.l1.weight.data,
-            "l1.bias": model.l1.bias.data,
-            "l2.weight": model.l2.weight.data,
-            "l2.bias": model.l2.bias.data,
-            "l3.weight": model.l3.weight.data,
-            "l3.bias": model.l3.bias.data,
-            "l4.weight": model.l4.weight.data,
-            "l4.bias": model.l4.bias.data,
-        },
-        output_file,
-    )
-    print(f"> saving model '{output_file}' to disk...")
+    save_model(model, output_file)

@@ -6,8 +6,9 @@ def get_parameters(model):
     for object in vars(model).values():
         if isinstance(object, Tensor):
             parameters.append(object)
-        elif hasattr(object, "__dict__"):
-            parameters.extend(get_parameters(object))
+        elif isinstance(object, list):
+            for item in object:
+                parameters.extend(get_parameters(item))
     return parameters
 
 

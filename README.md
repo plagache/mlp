@@ -8,7 +8,7 @@ If you want to learn more about the way [deep learning framework](dlf/README.md)
 ## Install
 
 ```bash
-uv venv --python 3.12 .venv && uv pip install -e .
+rm -rf .venv && uv venv --python 3.12 .venv && uv pip install -e .
 ```
 
 ## Training
@@ -29,9 +29,14 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 
 ## ToDo
 
-- [ ] shift to model in a json
-- [ ] add the __call__ function
+- [x] add the __call__ function
+- [x] model is now modular/ need same layers
+- [x] add load and save of model, also check for shape matching between safetensors and inference model
+- [ ] everything is a function, train loop, should be expressive
+- [ ] change get_parameters() to a yield and yield from
+- [ ] shift from list to load in a json
 - [ ] can load weight differently in Inference ?
+    - [ ] problem with inference
 - [ ] think about the dataset split in training and inference
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD
