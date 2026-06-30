@@ -1,11 +1,11 @@
-from dlf.optimizer import get_parameters
 from pathlib import Path
 
 from dataset import compute_accuracy, create_data, load_dataset
-from model_mlp import Network
+from model_mlp import Network, load_json
 from safetensors.numpy import load_file
 from train_mlp import log_loss
 
+from dlf.optimizer import get_parameters
 from dlf.tensor import Tensor
 
 
@@ -34,11 +34,11 @@ if __name__ == "__main__":
     assert Path("mlp.safetensors").exists(), "mlp.safetensors not found, run `uv run python examples/train_mlp.py` to generate it"
     assert Path("config.json").exists(), "config.json not found, you have to create it"
 
-    layer_sizes = [30, 30, 10, 2]
-    model = Network(layer_sizes, X_test.shape[1])
+    layers_sizes = load_json("config.json")
+    model = Network(layers_sizes, X_test.shape[1])
     params = get_parameters(model)
     print(f"Optimizer is tracking {len(params)} parameters")
-    print(f"{params=}")
+    # print(f"{params=}")
     load_model(model, "mlp.safetensors")
     # print(f"{params=}")
 

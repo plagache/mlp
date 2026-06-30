@@ -1,5 +1,5 @@
 from dataset import compute_accuracy, create_data, load_dataset
-from model_mlp import Network
+from model_mlp import Network, load_json
 from safetensors.numpy import save_file
 
 from dlf.optimizer import GD, get_parameters
@@ -15,7 +15,7 @@ def save_model(model: Network, output_file: str):
     state_dict = {}
 
     for i, layer in enumerate(model.layers):
-        print(f"{i}, {layer}")
+        # print(f"{i}, {layer}")
         state_dict[f"l{i}.weight"] = layer.weight.data
         state_dict[f"l{i}.bias"] = layer.bias.data
 
@@ -32,13 +32,13 @@ if __name__ == "__main__":
     X_test, Y_test = load_dataset(valid_path)
     print(f"X {valid_path} shape: {X_test.shape}")
 
-    layer_sizes = [30, 30, 10, 2]
-    model = Network(layer_sizes, X_train.shape[1])
+    layers_sizes = load_json("config.json")
+    model = Network(layers_sizes, X_train.shape[1])
     print(X_train.shape[0])
     print(X_train.shape[1])
 
     params = get_parameters(model)
-    print(f"Optimizer is tracking {len(params)} parameters from {layer_sizes=}")
+    print(f"Optimizer is tracking {len(params)} parameters from {layers_sizes=}")
     # print(f"{params=}")
 
     # optimizer = GD(get_parameters(model), 0.002, weight_decay=0)
