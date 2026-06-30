@@ -5,13 +5,10 @@ from dlf.nn import Linear
 from dlf.tensor import Tensor
 
 
-def load_json(path: str) -> list:
+def load_json(path: str) -> dict:
     with Path(path).open("r") as f:
-        # REPLACE string with logic
-        for line in f:
-            print(line)
-        layers_sizes = json.load(f)["layers"]
-        return layers_sizes
+        data = json.load(f)
+        return data
 
 
 class Network:

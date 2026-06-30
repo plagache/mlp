@@ -16,6 +16,7 @@ def save_model(model: Network, output_file: str):
 
     for i, layer in enumerate(model.layers):
         # print(f"{i}, {layer}")
+        # how to change this into a better expression ?
         state_dict[f"l{i}.weight"] = layer.weight.data
         state_dict[f"l{i}.bias"] = layer.bias.data
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     X_test, Y_test = load_dataset(valid_path)
     print(f"X {valid_path} shape: {X_test.shape}")
 
-    layers_sizes = load_json("config.json")
+    layers_sizes = load_json("config.json")["layers"]
     model = Network(layers_sizes, X_train.shape[1])
     print(X_train.shape[0])
     print(X_train.shape[1])

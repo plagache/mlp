@@ -16,6 +16,7 @@ def load_model(model: Network, input_file: str):
         weight_key = f"l{i}.weight"
         bias_key = f"l{i}.bias"
 
+        # also better expression or typing
         if weight_key in state_dict and bias_key in state_dict:
             saved_weight = state_dict[weight_key]
             saved_bias = state_dict[bias_key]
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     assert Path("mlp.safetensors").exists(), "mlp.safetensors not found, run `uv run python examples/train_mlp.py` to generate it"
     assert Path("config.json").exists(), "config.json not found, you have to create it"
 
-    layers_sizes = load_json("config.json")
+    layers_sizes = load_json("config.json")["layers"]
     model = Network(layers_sizes, X_test.shape[1])
     params = get_parameters(model)
     print(f"Optimizer is tracking {len(params)} parameters")
