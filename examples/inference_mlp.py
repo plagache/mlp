@@ -9,23 +9,16 @@ from dlf.optimizer import get_parameters
 from dlf.tensor import Tensor
 
 
-def load_model(model: Network, input_file: str):
+def load_model(model: Network, input_file: str) -> Network:
     state_dict = load_file(input_file)
-
     for i, layer in enumerate(model.layers):
-        weight_key = f"l{i}.weight"
-        bias_key = f"l{i}.bias"
-
-        # also better expression or typing
-        if weight_key in state_dict and bias_key in state_dict:
-            saved_weight = state_dict[weight_key]
-            saved_bias = state_dict[bias_key]
-            assert saved_weight.shape == layer.weight.data.shape, f"Layer {i} weight shape mismatch: saved {saved_weight.shape} != model {layer.weight.data.shape}"
-            assert saved_bias.shape == layer.bias.data.shape, f"Layer {i} bias shape mismatch: saved {saved_bias.shape} != model {layer.bias.data.shape}"
-            layer.weight.data = saved_weight
-            layer.bias.data = saved_bias
-        else:
-            print(f"Warning: No weights found for layer {i}")
+        saved_weight = state_dict[f"layers.{i}.weight"]
+        saved_bias = state_dict[f"layers.{i}.bias"]
+        assert saved_weight.shape == layer.weight.data.shape, f"Layer {i} weight shape mismatch: saved {saved_weight.shape} != model {layer.weight.data.shape}"
+        assert saved_bias.shape == layer.bias.data.shape, f"Layer {i} bias shape mismatch: saved {saved_bias.shape} != model {layer.bias.data.shape}"
+        layer.weight.data = saved_weight
+        layer.bias.data = saved_bias
+    return model
 
 
 if __name__ == "__main__":

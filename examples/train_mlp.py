@@ -15,13 +15,11 @@ def save_model(model: Network, output_file: str):
     state_dict = {}
 
     for i, layer in enumerate(model.layers):
-        # print(f"{i}, {layer}")
-        # how to change this into a better expression ?
-        state_dict[f"l{i}.weight"] = layer.weight.data
-        state_dict[f"l{i}.bias"] = layer.bias.data
+        state_dict[f"layers.{i}.weight"] = layer.weight.data
+        state_dict[f"layers.{i}.bias"] = layer.bias.data
 
-    save_file(state_dict, output_file)
-    print(f"> saving modular model '{output_file}' to disk...")
+    print(f"> saving model '{output_file}' to disk...")
+    return save_file(state_dict, output_file)
 
 
 if __name__ == "__main__":
