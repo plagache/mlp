@@ -29,17 +29,18 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 
 ## ToDo
 
-- [x] add the __call__ function
-- [x] model is now modular/ need same layers
-- [x] add load and save of model, also check for shape matching between safetensors and inference model
 - [ ] everything is a function, train loop, should be expressive
-- [ ] change get_parameters() to a yield and yield from
-- [ ] shift from list to load in a json
+- [ ] look into the save_model comment in train_mlp.py
 - [ ] can load weight differently in Inference ?
     - [ ] problem with inference
 - [ ] think about the dataset split in training and inference
+- [ ] change get_parameters() to a yield and yield from
+- [x] shift from list to load in a json
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD
+- [x] add the __call__ function
+- [x] model is now modular/ need same layers
+- [x] add load and save of model, also check for shape matching between safetensors and inference model
 - [x] split train and prediction program
 - [x] refacto loss function
 - [x] add BCE to inference

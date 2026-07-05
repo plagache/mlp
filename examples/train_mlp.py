@@ -10,7 +10,9 @@ from dlf.tensor import Tensor
 def log_loss(y, p):
     return -((y * p.log() + (1 - y) * (1 - p).log()).MEAN())
 
-
+# should take a dict has input not the model
+# get_state_dict() should be a function that return dict[str, Tensor]
+# then the get_parameters() can be return list(get_state_dict(model).values())
 def save_model(model: Network, output_file: str):
     state_dict = {}
 
