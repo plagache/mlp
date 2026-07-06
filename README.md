@@ -29,7 +29,7 @@ Other [commands](docs/commands.md) you can use, [run a python server of the dire
 
 ## ToDo
 
-- [ ] everything is a function, train loop, should be expressive
+- [ ] everything is a function, train should be a loop, and should be expressive
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD
     - [ ] explain momentum

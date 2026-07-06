@@ -1,10 +1,9 @@
 from dataset import compute_accuracy, create_data, load_dataset
-from model_mlp import Network, get_parameters, get_state_dict, load_json, save_model, log_loss
+from model_mlp import Network, get_parameters, get_state_dict, load_json, log_loss, save_model
+from plot import plot_series
 
 from dlf.optimizer import GD
-from dlf.plot import plot_series
 from dlf.tensor import Tensor
-
 
 if __name__ == "__main__":
     output_file = "mlp.safetensors"
