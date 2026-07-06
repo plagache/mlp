@@ -1,25 +1,10 @@
 from pathlib import Path
 
 from dataset import compute_accuracy, create_data, load_dataset
-from model_mlp import Network, load_json
-from safetensors.numpy import load_file
+from model_mlp import Network, load_json, load_model
 from train_mlp import log_loss
 
-from dlf.optimizer import get_parameters
 from dlf.tensor import Tensor
-
-
-def load_model(model: Network, input_file: str) -> Network:
-    state_dict = load_file(input_file)
-    for i, layer in enumerate(model.layers):
-        saved_weight = state_dict[f"layers.{i}.weight"]
-        saved_bias = state_dict[f"layers.{i}.bias"]
-        assert saved_weight.shape == layer.weight.data.shape, f"Layer {i} weight shape mismatch: saved {saved_weight.shape} != model {layer.weight.data.shape}"
-        assert saved_bias.shape == layer.bias.data.shape, f"Layer {i} bias shape mismatch: saved {saved_bias.shape} != model {layer.bias.data.shape}"
-        layer.weight.data = saved_weight
-        layer.bias.data = saved_bias
-    return model
-
 
 if __name__ == "__main__":
     train_path, valid_path = create_data()
@@ -28,13 +13,12 @@ if __name__ == "__main__":
     assert Path("mlp.safetensors").exists(), "mlp.safetensors not found, run `uv run python examples/train_mlp.py` to generate it"
     assert Path("config.json").exists(), "config.json not found, you have to create it"
 
+    # Reconstruct the model arch
     layers_sizes = load_json("config.json")["layers"]
     model = Network(layers_sizes, X_test.shape[1])
-    params = get_parameters(model)
-    print(f"Optimizer is tracking {len(params)} parameters")
-    # print(f"{params=}")
+
+    # Load parameters
     load_model(model, "mlp.safetensors")
-    # print(f"{params=}")
 
     Y_T = Tensor(Y_test)
     P_T = model(Tensor(X_test))

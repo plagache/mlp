@@ -1,27 +1,9 @@
 from dataset import compute_accuracy, create_data, load_dataset
-from model_mlp import Network, load_json
-from safetensors.numpy import save_file
+from model_mlp import Network, get_parameters, get_state_dict, load_json, save_model, log_loss
 
-from dlf.optimizer import GD, get_parameters
+from dlf.optimizer import GD
 from dlf.plot import plot_series
 from dlf.tensor import Tensor
-
-
-def log_loss(y, p):
-    return -((y * p.log() + (1 - y) * (1 - p).log()).MEAN())
-
-# should take a dict has input not the model
-# get_state_dict() should be a function that return dict[str, Tensor]
-# then the get_parameters() can be return list(get_state_dict(model).values())
-def save_model(model: Network, output_file: str):
-    state_dict = {}
-
-    for i, layer in enumerate(model.layers):
-        state_dict[f"layers.{i}.weight"] = layer.weight.data
-        state_dict[f"layers.{i}.bias"] = layer.bias.data
-
-    print(f"> saving model '{output_file}' to disk...")
-    return save_file(state_dict, output_file)
 
 
 if __name__ == "__main__":
@@ -89,4 +71,4 @@ if __name__ == "__main__":
     plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
     plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")
 
-    save_model(model, output_file)
+    save_model(get_state_dict(model), output_file)
