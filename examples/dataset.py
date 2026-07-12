@@ -11,12 +11,12 @@ def create_data(percent=0.8, shuffle=True, seed=None):
     data_path = "data.csv"
     train_path = "data_train.csv"
     valid_path = "data_valid.csv"
-    # no need for the function
+    # no need to create_data
     if Path(train_path).exists() and Path(valid_path).exists():
         print(f"data already split {train_path}, {valid_path}")
         return train_path, valid_path
 
-    # cannot do the function
+    # cannot do create_data
     assert Path(data_path).exists(), f"{data_path} not found"
 
     # Load and shuffle data

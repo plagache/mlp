@@ -27,12 +27,25 @@ Load weight from training and perform inference on unseen data.
 
 Other [commands](docs/commands.md) you can use, [run a python server of the directory](docs/commands.md#L19) and view images in your browser for examples.
 
+
+## Clean
+```bash
+rm -rf .venv
+rm -rf data_*
+rm -rf *.safetensors
+rm -rf *.png
+```
+
+
 ## ToDo
 
-- [ ] everything is a function, train should be a loop, and should be expressive
+- [ ] everything is a function, train should be a loop, and everything should be expressive
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD
+- [ ] maybe reduce the .gitignore
     - [ ] explain momentum
+    - [ ] explain weight decay
+    - [ ] explain information collapse
 - [x] look into the save_model comment in train_mlp.py
 - [x] can load weight differently in Inference ?
     - [x] we are protecting against missmatch
