@@ -6,6 +6,10 @@ from safetensors.numpy import load_file, save_file
 
 
 def create_data(percent=0.8, shuffle=True, seed=None):
+    """
+    we should type the return
+    probably rename split_data
+    """
 
     # we could add data_path has a parameters but what about already created train and valid then
     data_path = "data.csv"
@@ -59,6 +63,10 @@ def decoder(predctions):
 
 
 def encoder(column):
+    """
+    should take a dataframe ? not sure
+    but we can type the return
+    """
     malign = column.replace({"M": 1, "B": 0}).cast(pl.Float64)
     benign = column.replace({"M": 0, "B": 1}).cast(pl.Float64)
     return np.stack([malign.to_numpy(), benign.to_numpy()], axis=1)
@@ -71,6 +79,14 @@ def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
 
 
 def normalisation(X, file_path):
+    """
+    should be separate
+    load_normalisation(): from a file and output the mean and std / which type for return ?
+    fit_normalization(): perform the normalization return the mean and std
+    transform(): use mean and STD to transform and return an np.ndarray
+    then we can do if normalisation path exists we load if not we perform and save
+    then in either case we should have our mean and STD to transform
+    """
     stats_path = "norm_stats.safetensors"
 
     if Path(stats_path).exists():
@@ -90,9 +106,11 @@ def normalisation(X, file_path):
 
     return X_norm
 
+def load_csv(path: str | Path) -> pl.DataFrame:
+    return pl.read_csv(path, has_header=False)
 
 def load_dataset(file_path):
-    dataframe = pl.read_csv(file_path, has_header=False)
+    dataframe = load_csv(file_path)
 
     Y = encoder(dataframe["column_2"])
 
