@@ -4,6 +4,8 @@ import numpy as np
 import polars as pl
 from safetensors.numpy import load_file, save_file
 
+# maybe dataset.py -> data_pipeline.py
+# create_data(): test if data exist / load_csv / cleanup data / call split_data -> return path to created data
 
 def create_data(percent=0.8, shuffle=True, seed=None):
     """
