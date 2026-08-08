@@ -8,13 +8,16 @@ from dlf.tensor import Tensor
 if __name__ == "__main__":
     output_file = "mlp.safetensors"
 
-    train_path, valid_path = create_data()
+    # Json
+    layers_sizes = load_json("config.json")["layers"]
+    seed = load_json("config.json")["seed"]
+
+    train_path, valid_path = create_data(seed=seed)
     X_train, Y_train = load_dataset(train_path)
     print(f"X {train_path} shape: {X_train.shape}")
-    X_test, Y_test = load_dataset(valid_path)
-    print(f"X {valid_path} shape: {X_test.shape}")
+    X_validation, Y_validation = load_dataset(valid_path)
+    print(f"X {valid_path} shape: {X_validation.shape}")
 
-    layers_sizes = load_json("config.json")["layers"]
     model = Network(layers_sizes, X_train.shape[1])
     print(X_train.shape[0])
     print(X_train.shape[1])
@@ -37,35 +40,35 @@ if __name__ == "__main__":
     epochs = 100
     batch_size = 32
     for epoch in range(epochs):
-        for e in range(0, len(X_train), batch_size):
-            X_batch = X_train[e : e + batch_size]
-            Y_batch = Y_train[e : e + batch_size]
+        for element in range(0, len(X_train), batch_size):
+            X_batch = X_train[element : element + batch_size]
+            Y_batch = Y_train[element : element + batch_size]
+
             Y = Tensor(Y_batch)
             P = model(Tensor(X_batch))
-
             train_loss = log_loss(Y, P)
-
             optimizer.zero_grad()
             train_loss.backward()
             optimizer.step()
 
-            # if (step + 1) % 10 == 0:
-        Y_T = Tensor(Y_test)
-        P_T = model(Tensor(X_test))
-
-        validation_loss = log_loss(Y_T, P_T)
-
+        Y_VAL = Tensor(Y_validation)
+        P_VAL = model(Tensor(X_validation))
+        validation_loss = log_loss(Y_VAL, P_VAL)
         validation_losses.append(float(validation_loss.data[0]))
+
         train_losses.append(float(train_loss.data[0]))
 
         train_accuracy = compute_accuracy(Y.data, P.data)
-        validation_accuracy = compute_accuracy(Y_T.data, P_T.data)
+        validation_accuracy = compute_accuracy(Y_VAL.data, P_VAL.data)
         train_accuracies.append(train_accuracy)
         validation_accuracies.append(validation_accuracy)
 
-        print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, Accuracy = {train_accuracy:.2f}%")
-        # print(f"epoch {epoch}/{epochs} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
-        # print(f"step {step + 1 % 10}/{steps} - loss: {train_losses[-1]:.4f}, validation_loss: {validation_losses[-1]:.4f} - train_acc = {train_accuracy:.2f}%, validation_acc = {validation_accuracy:.2f}%")
+        print( f"Epoch {epoch+1}/{epochs} | "
+               f"train loss: {train_losses[-1]:.4f} | "
+               f"validation loss: {validation_losses[-1]:.4f} | "
+               f"train acc = {train_accuracy:.2f}% | "
+               f"validation acc = {validation_accuracy:.2f}%"
+        )
 
     plot_series([("train", train_accuracies), ("validation", validation_accuracies)], "Accuracy")
     plot_series([("train", train_losses), ("validation", validation_losses)], "Loss")

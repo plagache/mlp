@@ -44,6 +44,7 @@ def create_data(percent=0.8, shuffle=True, seed=None):
     # Write
     train.write_csv(train_path, include_header=False)
     valid.write_csv(valid_path, include_header=False)
+    print(seed)
 
     return train_path, valid_path
 
