@@ -39,6 +39,8 @@ rm -rf *.png
 
 ## ToDo
 
+- [ ] normalisation should be perform only on training data
+- [ ] add third program split data
 - [ ] everything is a function, train should be a loop, and everything should be expressive
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD

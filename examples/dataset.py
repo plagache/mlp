@@ -7,7 +7,8 @@ from safetensors.numpy import load_file, save_file
 # maybe dataset.py -> data_pipeline.py
 # create_data(): test if data exist / load_csv / cleanup data / call split_data -> return path to created data
 
-def create_data(percent=0.8, shuffle=True, seed=None):
+
+def create_data(percent=0.8, shuffle=True, seed=None) -> tuple[Path, Path]:
     """
     we should type the return
     probably rename split_data
@@ -55,7 +56,7 @@ def create_data(percent=0.8, shuffle=True, seed=None):
     return train_path, valid_path
 
 
-def decoder(predctions):
+def decoder(predctions) -> int:
     """
     takes a [P, 1-P]
     and return the indices of the classe
@@ -80,44 +81,50 @@ def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
     return np.mean(predictions_classes == targets_classes) * 100
 
 
-def normalisation(X, file_path):
-    """
-    should be separate
-    load_normalisation(): from a file and output the mean and std / which type for return ?
-    fit_normalization(): perform the normalization return the mean and std
-    transform(): use mean and STD to transform and return an np.ndarray
-    then we can do if normalisation path exists we load if not we perform and save
-    then in either case we should have our mean and STD to transform
-    """
-    stats_path = "norm_stats.safetensors"
+stats_path = Path("norm_stats.safetensors")
 
-    if Path(stats_path).exists():
-        print(f"Stats already compute loading from: {stats_path}")
-        stats = load_file(stats_path)
-        mean = stats["mean"]
-        std = stats["std"]
+
+def normalisation(X: np.ndarray, path: str | Path = stats_path) -> np.ndarray:
+    if Path(path).exists():
+        mean, std = load_normalisation(path)
     else:
-        # axis=0 so we have a mean for each features (30,) and not THE MEAN and a reduce axis ()
-        mean = X.mean(axis=0)
-        std = X.std(axis=0)
+        mean, std = fit_normalisation(X)
+        save_normalisation(mean, std, path)
+    return transform(X, mean, std)
 
-        save_file({"mean": mean, "std": std}, stats_path)
-        print(f"> saving stats '{stats_path}' to disk...")
 
-    X_norm = (X - mean) / std
+def load_normalisation(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
+    stats = load_file(path)
+    return stats["mean"], stats["std"]
 
-    return X_norm
+
+def save_normalisation(mean: np.ndarray, std: np.ndarray, path: str | Path):
+    save_file({"mean": mean, "std": std}, path)
+    # how to print / log using environement variable for ex:DEBUG ?
+    # print(f"> saving normalisation stats '{path}' to disk...")
+
+
+def fit_normalisation(X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    # axis=0 so we have a mean for each features (30,) and not THE MEAN and a reduce axis ()
+    return X.mean(axis=0), X.std(axis=0)
+
+
+def transform(X: np.ndarray, mean: np.ndarray, std: np.ndarray) -> np.ndarray:
+    return (X - mean) / std
+
 
 def load_csv(path: str | Path) -> pl.DataFrame:
     return pl.read_csv(path, has_header=False)
 
-def load_dataset(file_path):
-    dataframe = load_csv(file_path)
 
+def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
+    dataframe = load_csv(path)
+
+    # should be a const
     Y = encoder(dataframe["column_2"])
 
-    X = dataframe.select(dataframe.columns[2:32]).to_numpy()
-    X_norm = normalisation(X, file_path)
+    X = dataframe.select(dataframe.columns[2:]).to_numpy()
+    X_norm = normalisation(X, stats_path)
 
     return X_norm, Y
 
