@@ -1,8 +1,15 @@
+from typing import Iterable
+
 from .tensor import Tensor
 
+
 class Optimizer:
-    def step(self):...
-    def zero_grad(self):...
+    params: Iterable[Tensor]
+    lr: float
+
+    def step(self): ...
+    def zero_grad(self): ...
+
 
 class GD(Optimizer):
     def __init__(self, parameters: list[Tensor], learning_rate: float, weight_decay=0.0):

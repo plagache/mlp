@@ -72,7 +72,7 @@ class Tensor:
         return cls(np.ones_like(tensor.data))
 
     def topo_sort(self):
-        ret = dict()
+        ret = {}
         stack = [(self, False)]
         while stack:
             node, visited = stack.pop()
@@ -81,7 +81,7 @@ class Tensor:
             if not visited:
                 if node.context is not None:
                     stack.append((node, True))
-                    ops, *parents = node.context
+                    _ops, *parents = node.context
                     for parent in parents:
                         stack.append((parent, False))
             else:
@@ -102,7 +102,6 @@ class Tensor:
                     parent.grad = gradient
                 else:
                     parent.grad += gradient
-        return
 
     def __repr__(self):
         return f"<{self.data.shape}, {self.data}>"
