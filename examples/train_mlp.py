@@ -58,21 +58,21 @@ if __name__ == "__main__":
     optimizer = GD(get_parameters(model), learning_rate, weight_decay=weight_decay)
     # print(f"{params=}")
 
-    metrics = {"validation_losses": [], "train_losses": [], "train_accuracies": [], "validation_accuracies": []}
+    metrics = {"validation_loss": [], "train_loss": [], "train_accuracy": [], "validation_accuracy": []}
 
     for epoch in range(epochs):
         train(model, optimizer, X_train, Y_train, batch_size)
         train_loss, train_accuracy = evaluate(model, X_train, Y_train)
-        metrics["train_losses"].append(train_loss)
-        metrics["train_accuracies"].append(train_accuracy)
+        metrics["train_loss"].append(train_loss)
+        metrics["train_accuracy"].append(train_accuracy)
 
         validation_loss, validation_accuracy = evaluate(model, X_validation, Y_validation)
-        metrics["validation_losses"].append(validation_loss)
-        metrics["validation_accuracies"].append(validation_accuracy)
+        metrics["validation_loss"].append(validation_loss)
+        metrics["validation_accuracy"].append(validation_accuracy)
 
         print(f"Epoch {epoch + 1}/{epochs} | train loss: {train_loss:.4f} | validation loss: {validation_loss:.4f} | train acc = {train_accuracy:.2f}% | validation acc = {validation_accuracy:.2f}%")
 
-    plot_series([("train", metrics["train_accuracies"]), ("validation", metrics["validation_accuracies"])], "Accuracy")
-    plot_series([("train", metrics["train_losses"]), ("validation", metrics["validation_losses"])], "Loss")
+    plot_series([("train", metrics["train_accuracy"]), ("validation", metrics["validation_accuracy"])], "Accuracy")
+    plot_series([("train", metrics["train_loss"]), ("validation", metrics["validation_loss"])], "Loss")
 
     save_model(get_state_dict(model), output_file)
