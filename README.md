@@ -40,9 +40,10 @@ rm -rf *.png
 ## ToDo
 
 - [ ] everything is a function, train should be a loop
-    - [ ] all training variable in one place / no more changing directly in the function call
-    - [ ] train function for each epoch what do we do ? whats the return ?
-    - [ ] extract evaluate function -> return ?
+    - [x] all training variable in one place / no more changing directly in the function call
+    - [x] train function for each epoch what do we do ? whats the return ?
+    - [x] extract evaluate function -> return tuple[float, float]
+    - [ ] refacto Inference
     - [ ] metrics dictionary that contain the 4 list;
     - [ ] finally a fit function that takes epoch and data and train and evaluate epochs
 

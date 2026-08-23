@@ -8,7 +8,7 @@ from safetensors.numpy import load_file, save_file
 # create_data(): test if data exist / load_csv / cleanup data / call split_data -> return path to created data
 
 
-def create_data(percent=0.8, shuffle=True, seed=None) -> tuple[Path, Path]:
+def create_data(percent=0.8, shuffle=True, seed=None) -> tuple[str | Path, str | Path]:
     """
     we should type the return
     probably rename split_data
@@ -56,12 +56,12 @@ def create_data(percent=0.8, shuffle=True, seed=None) -> tuple[Path, Path]:
     return train_path, valid_path
 
 
-def decoder(predctions) -> int:
+def decoder(predictions) -> np.ndarray:
     """
     takes a [P, 1-P]
     and return the indices of the classe
     """
-    classes = np.argmax(predctions, axis=1)
+    classes = np.argmax(predictions, axis=1)
     return classes
 
 
@@ -120,7 +120,7 @@ def load_csv(path: str | Path) -> pl.DataFrame:
     return pl.read_csv(path, has_header=False)
 
 
-def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
+def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray, np.shape, np.shape]:
     dataframe = load_csv(path)
 
     # should be a const
@@ -129,7 +129,7 @@ def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
     X = dataframe.select(dataframe.columns[2:]).to_numpy()
     X_norm = normalisation(X, stats_path)
 
-    return X_norm, Y
+    return X_norm, Y, X_norm.shape, Y.shape
 
 
 if __name__ == "__main__":
