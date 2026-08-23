@@ -22,6 +22,20 @@ class Network:
 
 
 def log_loss(y, p):
+    """
+    y = Tensor([0, 1])
+    # how does it impact the loss function and why ? we use a contrastive method
+    # lets say in our first examples the model is predicting wrong
+    p = Tensor([0.25, 0.87])
+    # maybe explained here what is a contrastive method
+
+    term_one = y * p.log()
+    term_two = (1 - y) * (1 - p).log()
+    somme = term_one + term_two
+    moyenne = -somme.MEAN()
+    print(f"{term_one=}, {term_two=} , {somme=} , {moyenne=}")
+    exit()
+    """
     return -((y * p.log() + (1 - y) * (1 - p).log()).MEAN())
 
 

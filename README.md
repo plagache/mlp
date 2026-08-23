@@ -39,15 +39,31 @@ rm -rf *.png
 
 ## ToDo
 
+- [ ] everything is a function, train should be a loop
+    - [ ] all training variable in one place / no more changing directly in the function call
+    - [ ] train function for each epoch what do we do ? whats the return ?
+    - [ ] extract evaluate function -> return ?
+    - [ ] metrics dictionary that contain the 4 list;
+    - [ ] finally a fit function that takes epoch and data and train and evaluate epochs
+
+- [ ] Optimizer base class / proper GD / Proper SGD
+    - [ ] explain the different optimization: Weight decay, Momentum: see if saving previous values is heavy in compute
+- [ ] Encoder - Decoder base class ?
+- [ ] Dataclass ? can transpose from json to dataclass directly
 - [ ] normalisation should be perform only on training data
 - [ ] add third program split data
-- [ ] everything is a function, train should be a loop, and everything should be expressive
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD
 - [ ] maybe reduce the .gitignore
     - [ ] explain momentum
     - [ ] explain weight decay
     - [ ] explain information collapse
+
+- [ ] testing:
+    - [ ] shape/type missmatch
+- [ ] Explain contrastive method in log_loss maybe renamed to BCE / penalise wrong answer, reward good one
+- [ ] Explain Topo_sort with a graphviz would be perfect not sure its easaly done tho
+
 - [x] look into the save_model comment in train_mlp.py
 - [x] can load weight differently in Inference ?
     - [x] we are protecting against missmatch
@@ -56,22 +72,6 @@ rm -rf *.png
     - [x] we fixed with a check before split
 - [x] change get_parameters() to a yield and yield from
     - [x] don't see the interest anymore, simple is better to explain
-- [x] shift from list to load in a json
-- [x] add the __call__ function
-- [x] model is now modular/ need same layers
-- [x] add load and save of model, also check for shape matching between safetensors and inference model
-- [x] split train and prediction program
-- [x] refacto loss function
-- [x] add BCE to inference
-- [x] add split dataset program #output data_train.csv and data_valid.csv
-- [x] polars query to detect null or 0 value
-- [x] refacto load dataset with new path
-- [x] refacto with pathlib
-- [x] refacto load_dataset with encoder
-- [x] store the normalisation technique in a safetensors
-
-my intuition is that giving 80% of the dataset in one pass of our model will make it learn so fast.
-it does not need to reajust much its weight.
 
 the Formula we are using is a contrastive method, this mean that we are pushing up the probability of benign when its benign but we are also pushing down the probability of malign when its benign
 Actually its call a contrastive embedding, the embedding for Malign [1.0, 0.0] and benign [0.0, 1.0]
