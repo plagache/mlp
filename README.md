@@ -44,7 +44,7 @@ rm -rf *.png
     - [x] train function for each epoch what do we do ? whats the return ?
     - [x] extract evaluate function -> return tuple[float, float]
     - [ ] refacto Inference
-    - [ ] metrics dictionary that contain the 4 list;
+    - [x] metrics dictionary that contain the 4 list;
     - [ ] finally a fit function that takes epoch and data and train and evaluate epochs
 
 - [ ] Optimizer base class / proper GD / Proper SGD
