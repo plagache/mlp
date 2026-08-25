@@ -24,40 +24,9 @@ def train(model: Network, optimizer: Optimizer, X: Tensor, Y: Tensor, batch_size
         optimizer.step()
 
 
-if __name__ == "__main__":
-    output_file = "mlp.safetensors"
-
-    # Json
-    layers_sizes = load_json("config.json")["layers"]
-    seed = load_json("config.json")["seed"]
-
-    train_path, valid_path = create_data(seed=seed)
-    X_train, Y_train, X_train_Shape, Y_train_Shape = load_dataset(train_path)
-    X_validation, Y_validation, _, _ = load_dataset(valid_path)
-    print(f"X {train_path} shape: {X_train_Shape}, {Y_train_Shape}")
-    # print(f"X {valid_path} shape: {X_validation_Shape}, {Y_validation_Shape}")
-
-    X_train = Tensor(X_train)
-    Y_train = Tensor(Y_train)
-    X_validation = Tensor(X_validation)
-    Y_validation = Tensor(Y_validation)
-
-    weight_decay = 1e-7
-    learning_rate = 0.001
-    epochs = 100
-    batch_size = 32
-
-    model = Network(layers_sizes, X_train.data.shape[1])
-    print(X_train.data.shape[0])
-    print(X_train.data.shape[1])
-
-    params = get_parameters(model)
-    print(f"Optimizer is tracking {len(params)} parameters from {layers_sizes=}")
-    # print(f"{params=}")
-
-    optimizer = GD(get_parameters(model), learning_rate, weight_decay=weight_decay)
-    # print(f"{params=}")
-
+def fit(model, optimizer, data, epochs, batch_size):
+    X_train, Y_train = data["train"]
+    X_validation, Y_validation = data["validation"]
     metrics = {"validation_loss": [], "train_loss": [], "train_accuracy": [], "validation_accuracy": []}
 
     for epoch in range(epochs):
@@ -71,6 +40,39 @@ if __name__ == "__main__":
         metrics["validation_accuracy"].append(validation_accuracy)
 
         print(f"Epoch {epoch + 1}/{epochs} | train loss: {train_loss:.4f} | validation loss: {validation_loss:.4f} | train acc = {train_accuracy:.2f}% | validation acc = {validation_accuracy:.2f}%")
+    return metrics
+
+
+if __name__ == "__main__":
+    output_file = "mlp.safetensors"
+
+    # Json
+    layers_sizes = load_json("config.json")["layers"]
+    seed = load_json("config.json")["seed"]
+
+    train_path, valid_path = create_data(seed=seed)
+    X_train, Y_train, X_train_Shape, Y_train_Shape = load_dataset(train_path)
+    X_validation, Y_validation, _, _ = load_dataset(valid_path)
+    print(f"X {train_path} shape: {X_train_Shape}, {Y_train_Shape}")
+    # print(f"X {valid_path} shape: {X_validation_Shape}, {Y_validation_Shape}")
+
+    data = {"train": (Tensor(X_train), Tensor(Y_train)), "validation": (Tensor(X_validation), Tensor(Y_validation))}
+
+    weight_decay = 1e-7
+    learning_rate = 0.001
+    epochs = 100
+    batch_size = 32
+
+    model = Network(layers_sizes, X_train_Shape[1])
+    # print(X_train_Shape[0])
+    # print(X_train_Shape[1])
+
+    params = get_parameters(model)
+    print(f"Optimizer is tracking {len(params)} parameters from {layers_sizes=}")
+
+    optimizer = GD(get_parameters(model), learning_rate, weight_decay=weight_decay)
+
+    metrics = fit(model, optimizer, data, epochs, batch_size)
 
     plot_series([("train", metrics["train_accuracy"]), ("validation", metrics["validation_accuracy"])], "Accuracy")
     plot_series([("train", metrics["train_loss"]), ("validation", metrics["validation_loss"])], "Loss")
