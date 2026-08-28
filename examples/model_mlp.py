@@ -21,7 +21,8 @@ class Network:
         return x
 
 
-def log_loss(y, p):
+# here we need to type the Y and P
+def log_loss(y: Tensor, p: Tensor) -> Tensor:
     """
     y = Tensor([0, 1])
     # how does it impact the loss function and why ? we use a contrastive method
