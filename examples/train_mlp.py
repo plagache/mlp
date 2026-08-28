@@ -58,9 +58,11 @@ if __name__ == "__main__":
 
     data = {"train": (Tensor(X_train), Tensor(Y_train)), "validation": (Tensor(X_validation), Tensor(Y_validation))}
 
+    # we can put them in json and initialize up there
     weight_decay = 1e-7
     learning_rate = 0.001
     epochs = 100
+    # here caution with small batch_size resulting in log of 0 or divided by zero
     batch_size = 32
 
     model = Network(layers_sizes, X_train_Shape[1])
