@@ -36,16 +36,9 @@ rm -rf *.safetensors
 rm -rf *.png
 ```
 
-
 ## ToDo
 
-- [ ] everything is a function, train should be a loop
-    - [x] all training variable in one place / no more changing directly in the function call
-    - [x] train function for each epoch what do we do ? whats the return ?
-    - [x] extract evaluate function -> return tuple[float, float]
-    - [ ] refacto Inference
-    - [x] metrics dictionary that contain the 4 list;
-    - [ ] finally a fit function that takes epoch and data and train and evaluate epochs
+- [ ] refacto Inference
 
 - [ ] Optimizer base class / proper GD / Proper SGD
     - [ ] explain the different optimization: Weight decay, Momentum: see if saving previous values is heavy in compute
@@ -65,6 +58,12 @@ rm -rf *.png
 - [ ] Explain contrastive method in log_loss maybe renamed to BCE / penalise wrong answer, reward good one
 - [ ] Explain Topo_sort with a graphviz would be perfect not sure its easaly done tho
 
+- [x] everything is a function, train should be a loop
+    - [x] all training variable in one place / no more changing directly in the function call
+    - [x] train function for each epoch what do we do ? whats the return ?
+    - [x] extract evaluate function -> return tuple[float, float]
+    - [x] metrics dictionary that contain the 4 list;
+    - [x] finally a fit function that takes epoch and data and train and evaluate epochs
 - [x] look into the save_model comment in train_mlp.py
 - [x] can load weight differently in Inference ?
     - [x] we are protecting against missmatch
