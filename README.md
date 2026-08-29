@@ -38,7 +38,6 @@ rm -rf *.png
 
 ## ToDo
 
-- [ ] refacto Inference
 
 - [ ] Optimizer base class / proper GD / Proper SGD
     - [ ] explain the different optimization: Weight decay, Momentum: see if saving previous values is heavy in compute
@@ -58,6 +57,7 @@ rm -rf *.png
 - [ ] Explain contrastive method in log_loss maybe renamed to BCE / penalise wrong answer, reward good one
 - [ ] Explain Topo_sort with a graphviz would be perfect not sure its easaly done tho
 
+- [x] refacto Inference
 - [x] everything is a function, train should be a loop
     - [x] all training variable in one place / no more changing directly in the function call
     - [x] train function for each epoch what do we do ? whats the return ?
