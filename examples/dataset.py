@@ -120,7 +120,7 @@ def load_csv(path: str | Path) -> pl.DataFrame:
     return pl.read_csv(path, has_header=False)
 
 
-def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray, np.shape, np.shape]:
+def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray, tuple, tuple]:
     dataframe = load_csv(path)
 
     # should be a const
@@ -134,7 +134,7 @@ def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray, np.shape, np
 
 if __name__ == "__main__":
     train_path, valid_path = create_data()
-    X_train, Y_train = load_dataset(train_path)
-    print(f"X {train_path} shape: {X_train.shape}")
-    X_test, Y_test = load_dataset(valid_path)
-    print(f"X {valid_path} shape: {X_test.shape}")
+    X_train, Y_train, X_train_Shape, Y_train_Shape = load_dataset(train_path)
+    print(f"X {train_path} shape: {X_train_Shape}, {Y_train_Shape}")
+    X_validation, Y_validation, X_validation_Shape, Y_validation_Shape = load_dataset(valid_path)
+    print(f"X {valid_path} shape: {X_validation_Shape}, {Y_validation_Shape}")

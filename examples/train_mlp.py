@@ -54,7 +54,6 @@ if __name__ == "__main__":
     X_train, Y_train, X_train_Shape, Y_train_Shape = load_dataset(train_path)
     X_validation, Y_validation, _, _ = load_dataset(valid_path)
     print(f"X {train_path} shape: {X_train_Shape}, {Y_train_Shape}")
-    # print(f"X {valid_path} shape: {X_validation_Shape}, {Y_validation_Shape}")
 
     data = {"train": (Tensor(X_train), Tensor(Y_train)), "validation": (Tensor(X_validation), Tensor(Y_validation))}
 
