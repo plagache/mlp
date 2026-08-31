@@ -39,22 +39,22 @@ rm -rf *.png
 ## ToDo
 
 
+- [ ] Explain contrastive method in log_loss maybe renamed to BCE / penalise wrong answer, reward good one
 - [ ] Optimizer base class / proper GD / Proper SGD
     - [ ] explain the different optimization: Weight decay, Momentum: see if saving previous values is heavy in compute
+    - [ ] explain momentum
+    - [ ] explain weight decay
+    - [ ] explain information collapse
 - [ ] Encoder - Decoder base class ?
 - [ ] Dataclass ? can transpose from json to dataclass directly
-- [ ] normalisation should be perform only on training data
+- [ ] Calculating normalization stats should be perform only on training data one time
 - [ ] add third program split data
 - [ ] make some link about the data to the actual images of a breast cancer using some http balise like in roryclearcam
 - [ ] implement SGD
 - [ ] maybe reduce the .gitignore
-    - [ ] explain momentum
-    - [ ] explain weight decay
-    - [ ] explain information collapse
 
 - [ ] testing:
     - [ ] shape/type missmatch
-- [ ] Explain contrastive method in log_loss maybe renamed to BCE / penalise wrong answer, reward good one
 - [ ] Explain Topo_sort with a graphviz would be perfect not sure its easaly done tho
 
 - [x] refacto Inference
