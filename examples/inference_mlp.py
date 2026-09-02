@@ -21,6 +21,6 @@ if __name__ == "__main__":
     load_model(model, "mlp.safetensors")
 
     # Evaluate
-    validation_accuracy, validation_loss = evaluate(model, Tensor(X_validation), Tensor(Y_validation))
+    validation_loss, validation_accuracy = evaluate(model, Tensor(X_validation), Tensor(Y_validation))
     print(f"BCE: {validation_loss:4f}")
     print(f"Validation accuracy: {validation_accuracy:.2f}%")
