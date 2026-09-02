@@ -26,3 +26,16 @@ line-length = 250
 
 [tool.ruff.format]
 skip-magic-trailing-comma = true
+
+[tool.mypy]
+disallow_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+strict_equality = true
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+]

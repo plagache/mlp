@@ -8,20 +8,20 @@ If you want to learn more about the way [deep learning framework](dlf/README.md)
 ## Install
 
 ```bash
-rm -rf .venv && uv venv --python 3.12 .venv && uv pip install -e .
+uv sync
 ```
 
 ## Training
 
 ```bash
-uv run python examples/train_mlp.py
+uv run examples/train_mlp.py
 ```
 this will also save plot about the training data.
 
 ## Inference
 
 ```bash
-uv run python examples/inference_mlp.py
+uv run examples/inference_mlp.py
 ```
 Load weight from training and perform inference on unseen data.
 
@@ -34,6 +34,21 @@ rm -rf .venv
 rm -rf data_*
 rm -rf *.safetensors
 rm -rf *.png
+```
+
+## Development
+```bash
+uv sync --dev
+```
+
+## Mypy
+```bash
+uv run mypy .
+```
+
+## Test
+```bash
+uv run pytest
 ```
 
 ## ToDo
@@ -73,6 +88,8 @@ rm -rf *.png
 - [x] change get_parameters() to a yield and yield from
     - [x] don't see the interest anymore, simple is better to explain
 
+Contrastive method is the "study" of difference but at the same time of similarities.
+Contrastive methods are training techniques that teach a model to bring similar data points close together and push dissimilar ones far apart.
 the Formula we are using is a contrastive method, this mean that we are pushing up the probability of benign when its benign but we are also pushing down the probability of malign when its benign
 Actually its call a contrastive embedding, the embedding for Malign [1.0, 0.0] and benign [0.0, 1.0]
 and for a Malign examples we would want to push the first column of our output to 1 and the 2nd to zero
