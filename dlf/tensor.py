@@ -18,8 +18,8 @@ class Operations(IntEnum):
 
 
 backward_operations = {
-    Operations.ADD: lambda gradient, parent: (gradient, gradient),
-    Operations.SUB: lambda gradient, parent: (gradient, -gradient),
+    Operations.ADD: lambda gradient, *_: (gradient, gradient),
+    Operations.SUB: lambda gradient, *_: (gradient, -gradient),
     Operations.SUM: lambda gradient, parent: (np.ones_like(parent[0].data) * gradient,),
     Operations.MUL: lambda gradient, parents: (parents[1].data * gradient, parents[0].data * gradient),
     Operations.DIV: lambda gradient, parents: (gradient / parents[1].data, (-parents[0].data * gradient / np.square(parents[1].data))),
@@ -28,7 +28,7 @@ backward_operations = {
     Operations.LOG: lambda gradient, parent: (gradient / parent[0].data,),
     Operations.EXP: lambda gradient, parent: (gradient * np.exp(parent[0].data),),
     Operations.SOFTMAX: lambda gradient, parent: (_softmax(parent[0].data) * (gradient - (gradient * _softmax(parent[0].data)).sum(axis=-1, keepdims=True)),),
-    Operations.T: lambda gradient, parent: (gradient.T,),
+    Operations.T: lambda gradient, *_: (gradient.T,),
 }
 
 
@@ -88,7 +88,7 @@ class Tensor:
                 ret[node] = None
         return ret
 
-    def backward(self):
+    def backward(self) -> None:
 
         if self.grad is None:
             self.grad = np.ones_like(self.data)
