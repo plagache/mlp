@@ -3,6 +3,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+plt.style.use("bmh")
+
 
 def plot_series(series, plot_name):
     for name, values in series:
