@@ -53,7 +53,7 @@ if __name__ == "__main__":
     train_path, valid_path = create_data(seed=seed)
     X_train, Y_train = load_dataset(train_path)
     X_validation, Y_validation = load_dataset(valid_path)
-    print(f"X {train_path} shape: {X_train.data.shape}, {Y_train.data.shape}")
+    print(f"X {train_path} shape: {X_train.shape}, {Y_train.shape}")
 
     data = {"train": (Tensor(X_train), Tensor(Y_train)), "validation": (Tensor(X_validation), Tensor(Y_validation))}
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # here caution with small batch_size resulting in log of 0 or divided by zero
     batch_size = 128
 
-    model = Network(layers_sizes, X_train.data.shape[1])
+    model = Network(layers_sizes, X_train.shape[1])
 
     params = get_parameters(model)
     print(f"Optimizer is tracking {len(params)} parameters from {layers_sizes=}")

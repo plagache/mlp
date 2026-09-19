@@ -135,6 +135,6 @@ def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
 if __name__ == "__main__":
     train_path, valid_path = create_data()
     X_train, Y_train = load_dataset(train_path)
-    print(f"{train_path} shape: {X_train.data.shape}, {Y_train.data.shape}")
+    print(f"{train_path} shape: {X_train.shape}, {Y_train.shape}")
     X_validation, Y_validation = load_dataset(valid_path)
-    print(f"{valid_path} shape: {X_validation.data.shape}, {Y_validation.data.shape}")
+    print(f"{valid_path} shape: {X_validation.shape}, {Y_validation.shape}")
