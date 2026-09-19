@@ -98,7 +98,7 @@ def load_normalisation(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
     return stats["mean"], stats["std"]
 
 
-def save_normalisation(mean: np.ndarray, std: np.ndarray, path: str | Path):
+def save_normalisation(mean: np.ndarray, std: np.ndarray, path: str | Path) -> None:
     save_file({"mean": mean, "std": std}, path)
     # how to print / log using environement variable for ex:DEBUG ?
     # print(f"> saving normalisation stats '{path}' to disk...")
@@ -120,7 +120,7 @@ def load_csv(path: str | Path) -> pl.DataFrame:
     return pl.read_csv(path, has_header=False)
 
 
-def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray, tuple, tuple]:
+def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
     dataframe = load_csv(path)
 
     # should be a const
@@ -129,12 +129,12 @@ def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray, tuple, tuple
     X = dataframe.select(dataframe.columns[2:]).to_numpy()
     X_norm = normalisation(X, stats_path)
 
-    return X_norm, Y, X_norm.shape, Y.shape
+    return X_norm, Y
 
 
 if __name__ == "__main__":
     train_path, valid_path = create_data()
-    X_train, Y_train, X_train_Shape, Y_train_Shape = load_dataset(train_path)
-    print(f"X {train_path} shape: {X_train_Shape}, {Y_train_Shape}")
-    X_validation, Y_validation, X_validation_Shape, Y_validation_Shape = load_dataset(valid_path)
-    print(f"X {valid_path} shape: {X_validation_Shape}, {Y_validation_Shape}")
+    X_train, Y_train = load_dataset(train_path)
+    print(f"{train_path} shape: {X_train.data.shape}, {Y_train.data.shape}")
+    X_validation, Y_validation = load_dataset(valid_path)
+    print(f"{valid_path} shape: {X_validation.data.shape}, {Y_validation.data.shape}")

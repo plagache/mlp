@@ -51,9 +51,9 @@ if __name__ == "__main__":
     seed = load_json("config.json")["seed"]
 
     train_path, valid_path = create_data(seed=seed)
-    X_train, Y_train, X_train_Shape, Y_train_Shape = load_dataset(train_path)
-    X_validation, Y_validation, _, _ = load_dataset(valid_path)
-    print(f"X {train_path} shape: {X_train_Shape}, {Y_train_Shape}")
+    X_train, Y_train = load_dataset(train_path)
+    X_validation, Y_validation = load_dataset(valid_path)
+    print(f"X {train_path} shape: {X_train.data.shape}, {Y_train.data.shape}")
 
     data = {"train": (Tensor(X_train), Tensor(Y_train)), "validation": (Tensor(X_validation), Tensor(Y_validation))}
 
@@ -62,11 +62,9 @@ if __name__ == "__main__":
     learning_rate = 0.001
     epochs = 100
     # here caution with small batch_size resulting in log of 0 or divided by zero
-    batch_size = 32
+    batch_size = 128
 
-    model = Network(layers_sizes, X_train_Shape[1])
-    # print(X_train_Shape[0])
-    # print(X_train_Shape[1])
+    model = Network(layers_sizes, X_train.data.shape[1])
 
     params = get_parameters(model)
     print(f"Optimizer is tracking {len(params)} parameters from {layers_sizes=}")
