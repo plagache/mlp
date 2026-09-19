@@ -1,4 +1,4 @@
-from dataset import compute_accuracy, create_data, load_dataset
+from dataset_pipeline import compute_accuracy, load_dataset, split_data
 from model_mlp import Network, get_parameters, get_state_dict, load_json, log_loss, save_model
 from plot import plot_series
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     layers_sizes = load_json("config.json")["layers"]
     seed = load_json("config.json")["seed"]
 
-    train_path, valid_path = create_data(seed=seed)
+    train_path, valid_path = split_data(seed=seed)
     X_train, Y_train = load_dataset(train_path)
     X_validation, Y_validation = load_dataset(valid_path)
     print(f"X {train_path} shape: {X_train.shape}, {Y_train.shape}")

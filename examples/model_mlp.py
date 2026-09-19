@@ -54,7 +54,7 @@ def get_parameters(model: Network) -> list[Tensor]:
 
 
 # we can reduce here, but stay like this, to be sure i understand when i come back
-def save_model(state_dict: dict, output_file: str):
+def save_model(state_dict: dict, output_file: str) -> None:
     print(f"> saving model '{output_file}' to disk...")
     save_dict = {cle: valeur.data for cle, valeur in state_dict.items()}
     save_file(save_dict, output_file)

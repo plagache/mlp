@@ -102,9 +102,6 @@ class Tensor:
                     parent.grad = gradient
                 else:
                     parent.grad += gradient
-    
-    def __shape__(self):
-        return self.data.shape
 
     def __repr__(self):
         return f"<{self.data.shape}, {self.data}>"

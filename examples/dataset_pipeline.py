@@ -2,13 +2,13 @@ from pathlib import Path
 
 import numpy as np
 import polars as pl
-from safetensors.numpy import load_file, save_file
+from normalisation import normalisation
 
 # maybe dataset.py -> data_pipeline.py
 # create_data(): test if data exist / load_csv / cleanup data / call split_data -> return path to created data
 
 
-def create_data(percent=0.8, shuffle=True, seed=None) -> tuple[str | Path, str | Path]:
+def split_data(percent=0.8, shuffle=True, seed=None) -> tuple[str | Path, str | Path]:
     """
     we should type the return
     probably rename split_data
@@ -81,38 +81,6 @@ def compute_accuracy(targets: np.ndarray, predictions: np.ndarray) -> float:
     return np.mean(predictions_classes == targets_classes) * 100
 
 
-stats_path = Path("norm_stats.safetensors")
-
-
-def normalisation(X: np.ndarray, path: str | Path = stats_path) -> np.ndarray:
-    if Path(path).exists():
-        mean, std = load_normalisation(path)
-    else:
-        mean, std = fit_normalisation(X)
-        save_normalisation(mean, std, path)
-    return transform(X, mean, std)
-
-
-def load_normalisation(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
-    stats = load_file(path)
-    return stats["mean"], stats["std"]
-
-
-def save_normalisation(mean: np.ndarray, std: np.ndarray, path: str | Path) -> None:
-    save_file({"mean": mean, "std": std}, path)
-    # how to print / log using environement variable for ex:DEBUG ?
-    # print(f"> saving normalisation stats '{path}' to disk...")
-
-
-def fit_normalisation(X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    # axis=0 so we have a mean for each features (30,) and not THE MEAN and a reduce axis ()
-    return X.mean(axis=0), X.std(axis=0)
-
-
-def transform(X: np.ndarray, mean: np.ndarray, std: np.ndarray) -> np.ndarray:
-    return (X - mean) / std
-
-
 def load_csv(path: str | Path) -> pl.DataFrame:
     """
     https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.names
@@ -127,14 +95,15 @@ def load_dataset(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
     Y = encoder(dataframe["column_2"])
 
     X = dataframe.select(dataframe.columns[2:]).to_numpy()
-    X_norm = normalisation(X, stats_path)
+    X_norm = normalisation(X)
 
     return X_norm, Y
 
 
 if __name__ == "__main__":
-    train_path, valid_path = create_data()
+    train_path, valid_path = split_data()
     X_train, Y_train = load_dataset(train_path)
     print(f"{train_path} shape: {X_train.shape}, {Y_train.shape}")
+    print(f"{type(X_train)}")
     X_validation, Y_validation = load_dataset(valid_path)
     print(f"{valid_path} shape: {X_validation.shape}, {Y_validation.shape}")
