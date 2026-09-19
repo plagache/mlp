@@ -62,7 +62,9 @@ if __name__ == "__main__":
     learning_rate = 0.001
     epochs = 100
     # here caution with small batch_size resulting in log of 0 or divided by zero
-    batch_size = 128
+    # also more subject to outlier in the batch
+    # while big batch, will learn in multiple direction, the mean resulting in learning not much
+    batch_size = 32
 
     model = Network(layers_sizes, X_train.shape[1])
 
