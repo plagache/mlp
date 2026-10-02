@@ -25,6 +25,10 @@ def train(model: Network, optimizer: Optimizer, X: Tensor, Y: Tensor, batch_size
 
 
 def fit(model, optimizer, data, epochs, batch_size):
+    """
+    what are good methods to fit ?
+    i think this is where we should implement early stopping
+    """
     X_train, Y_train = data["train"]
     X_validation, Y_validation = data["validation"]
     metrics = {"validation_loss": [], "train_loss": [], "train_accuracy": [], "validation_accuracy": []}
@@ -61,9 +65,9 @@ if __name__ == "__main__":
     weight_decay = 1e-7
     learning_rate = 0.001
     epochs = 100
-    # here caution with small batch_size resulting in log of 0 or divided by zero
+    # caution with small batch_size resulting in log of 0 or divided by zero
     # also more subject to outlier in the batch
-    # while big batch, will learn in multiple direction, the mean resulting in learning not much
+    # while big batch, having multiple examples and meaning them will result in a small step toward the truth
     batch_size = 32
 
     model = Network(layers_sizes, X_train.shape[1])

@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from dataset import compute_accuracy, create_data, load_dataset
+from dataset_pipeline import compute_accuracy, split_data, load_dataset
 from model_mlp import Network, load_json, load_model
 from train_mlp import evaluate
 
 from dlf.tensor import Tensor
 
 if __name__ == "__main__":
-    train_path, valid_path = create_data()
+    train_path, valid_path = split_data()
     X_validation, Y_validation = load_dataset(valid_path)
 
     assert Path("mlp.safetensors").exists(), "mlp.safetensors not found, run `uv run python examples/train_mlp.py` to generate it"
