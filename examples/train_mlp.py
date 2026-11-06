@@ -46,10 +46,10 @@ def fit(model, optimizer, data, epochs, batch_size):
         metrics["validation_accuracy"].append(validation_accuracy)
 
         print(f"Epoch {epoch + 1}/{epochs} | train loss: {train_loss:.4f} | validation loss: {validation_loss:.4f} | train acc = {train_accuracy:.2f}% | validation acc = {validation_accuracy:.2f}%")
-        run.track(train_loss, name='train_loss')
-        run.track(train_accuracy, name='train_accuracy')
-        run.track(validation_loss, name='validation_loss')
-        run.track(validation_accuracy, name='validation_accuracy')
+        run.track(train_loss, name="train_loss")
+        run.track(train_accuracy, name="train_accuracy")
+        run.track(validation_loss, name="validation_loss")
+        run.track(validation_accuracy, name="validation_accuracy")
     return metrics
 
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     config = load_json("config.json")
 
     run = Run()
-    run['hparams'] = config
+    run["hparams"] = config
 
     # Architecture
     layers_sizes = config["layers"]
