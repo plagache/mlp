@@ -51,8 +51,9 @@ if __name__ == "__main__":
     output_file = "mlp.safetensors"
 
     # Json
-    layers_sizes = load_json("config.json")["layers"]
-    seed = load_json("config.json")["seed"]
+    config = load_json("config.json")
+    layers_sizes = config["layers"]
+    seed = config["seed"]
 
     train_path, valid_path = split_data(seed=seed)
     X_train, Y_train = load_dataset(train_path)
