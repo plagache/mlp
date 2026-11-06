@@ -5,6 +5,8 @@ from plot import plot_series
 from dlf.optimizer import GD, Optimizer
 from dlf.tensor import Tensor
 
+from aim import Run
+
 
 def evaluate(model: Network, X: Tensor, Y: Tensor) -> tuple[float, float]:
     prediction = model(X)
@@ -44,6 +46,10 @@ def fit(model, optimizer, data, epochs, batch_size):
         metrics["validation_accuracy"].append(validation_accuracy)
 
         print(f"Epoch {epoch + 1}/{epochs} | train loss: {train_loss:.4f} | validation loss: {validation_loss:.4f} | train acc = {train_accuracy:.2f}% | validation acc = {validation_accuracy:.2f}%")
+        run.track(train_loss, name='train_loss')
+        run.track(train_accuracy, name='train_accuracy')
+        run.track(validation_loss, name='validation_loss')
+        run.track(validation_accuracy, name='validation_accuracy')
     return metrics
 
 
@@ -51,6 +57,9 @@ if __name__ == "__main__":
     output_file = "mlp.safetensors"
 
     config = load_json("config.json")
+
+    run = Run()
+    run['hparams'] = config
 
     # Architecture
     layers_sizes = config["layers"]
