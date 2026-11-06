@@ -50,10 +50,20 @@ def fit(model, optimizer, data, epochs, batch_size):
 if __name__ == "__main__":
     output_file = "mlp.safetensors"
 
-    # Json
     config = load_json("config.json")
+
+    # Architecture
     layers_sizes = config["layers"]
     seed = config["seed"]
+
+    # Parameters
+    weight_decay = config["weight_decay"]
+    learning_rate = config["learning_rate"]
+    epochs = config["epochs"]
+    # caution with small batch_size resulting in log of 0 or divided by zero
+    # also more subject to outlier in the batch
+    # while big batch, having multiple examples and meaning them will result in a small step toward the truth
+    batch_size = config["batch_size"]
 
     train_path, valid_path = split_data(seed=seed)
     X_train, Y_train = load_dataset(train_path)
@@ -61,15 +71,6 @@ if __name__ == "__main__":
     print(f"X {train_path} shape: {X_train.shape}, {Y_train.shape}")
 
     data = {"train": (Tensor(X_train), Tensor(Y_train)), "validation": (Tensor(X_validation), Tensor(Y_validation))}
-
-    # we can put them in json and initialize up there
-    weight_decay = 1e-7
-    learning_rate = 0.001
-    epochs = 100
-    # caution with small batch_size resulting in log of 0 or divided by zero
-    # also more subject to outlier in the batch
-    # while big batch, having multiple examples and meaning them will result in a small step toward the truth
-    batch_size = 32
 
     model = Network(layers_sizes, X_train.shape[1])
 
