@@ -14,7 +14,8 @@ if __name__ == "__main__":
     assert Path("config.json").exists(), "config.json not found, you have to create it"
 
     # Reconstruct the model arch
-    layers_sizes = load_json("config.json")["layers"]
+    config = load_json("config.json")
+    layers_sizes = config["layers"]
     model = Network(layers_sizes, X_validation.shape[1])
 
     # Load parameters
