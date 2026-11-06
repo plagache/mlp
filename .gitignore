@@ -55,3 +55,5 @@ venv.bak/
 
 # created_data
 data_*
+
+.aim/
